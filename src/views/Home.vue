@@ -4,7 +4,7 @@ import { UseClipboard } from '@/composables';
 import { userApi } from '@/api';
 
 const userStore = useUserStore();
-const logme = () => userStore.logMe();
+const { isLogin } = storeToRefs(userStore);
 
 const { currentUser } = storeToRefs(userStore);
 
@@ -16,7 +16,9 @@ const callApi = async () => (userGetByApi.value = await userApi.getUser('1'));
 
 <template>
   <HelloWorld msg="vue3 starter" />
-  <button @click="logme">LOG ME</button>
+  <button @click="userStore.logMe" :disabled="isLogin">
+    {{ !isLogin ? 'LOG ME' : 'ALREADY LOG' }}
+  </button>
 
   <br />
 

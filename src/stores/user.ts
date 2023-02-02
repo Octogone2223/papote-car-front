@@ -12,14 +12,14 @@ export const useUserStore = defineStore({
   id: 'userStore',
 
   state: () => ({
-    currentUser: {} as User,
+    currentUser: null as User | null,
     loading: false,
     error: null,
   }),
 
   getters: {
     isLogin(): boolean {
-      return !!this.currentUser ?? false;
+      return !!this.currentUser;
     },
   },
 
