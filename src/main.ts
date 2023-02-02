@@ -1,12 +1,26 @@
-import { createApp } from "vue";
-import rootApp from "./App.vue";
-import router from "./router";
+import { createApp } from 'vue';
+import rootApp from './App.vue';
+import router from './router';
 
-import "uno.css";
+// FRAMEWORK CSS
+import PrimeVue from 'primevue/config';
+import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
+
+// STYLES
+import 'uno.css';
+import 'primevue/resources/themes/lara-light-teal/theme.css';
+import 'primevue/resources/primevue.min.css';
+import 'primeicons/primeicons.css';
 
 const app = createApp(rootApp);
 const pinia = createPinia();
 
 app.use(router);
 app.use(pinia);
-app.mount("#app");
+app.use(PrimeVue);
+
+app.component('InputText', InputText);
+app.component('Button', Button);
+
+app.mount('#app');

@@ -11,6 +11,7 @@
     "@vueuse/core": "^8.9.4",
     "ky": "^0.30.0",
     "pinia": "^2.0.30",
+    "primevue": "^3.23.0",
     "vue": "^3.2.25"
   },
   "devDependencies": {

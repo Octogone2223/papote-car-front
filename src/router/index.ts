@@ -3,8 +3,25 @@ import { createRouter, createWebHistory } from 'vue-router';
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: () => import('../views/Home.vue'),
+    name: 'board',
+    component: () => import('../views/board/Index.vue'),
+    children: [
+      {
+        path: '',
+        name: 'board-messages',
+        component: () => import('../views/board/Messages.vue'),
+      },
+    ],
+  },
+  {
+    path: "/s'enregistrer",
+    name: 'register',
+    component: () => import('../views/auth/SignUp.vue'),
+  },
+  {
+    path: '/se-connecter',
+    name: 'login',
+    component: () => import('../views/auth/SignIn.vue'),
   },
 ];
 
