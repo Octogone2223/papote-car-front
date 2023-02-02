@@ -11,6 +11,11 @@ const routes = [
         name: 'board-messages',
         component: () => import('../views/board/Messages.vue'),
       },
+      {
+        path: '/board-research',
+        name: 'board-research',
+        component: () => import('../views/board/Research.vue'),
+      },
     ],
   },
   {

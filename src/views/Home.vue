@@ -16,7 +16,7 @@ const callApi = async () => (userGetByApi.value = await userApi.getUser('1'));
 
 <template>
   <HelloWorld msg="vue3 starter" />
-  <button @click="userStore.logMe" :disabled="isLogin">
+  <button @click="userStore.login" :disabled="isLogin">
     {{ !isLogin ? 'LOG ME' : 'ALREADY LOG' }}
   </button>
 
