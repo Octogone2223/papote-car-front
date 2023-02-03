@@ -16,6 +16,11 @@ const routes = [
         name: 'board-publish',
         component: () => import('../views/board/AddTravel.vue'),
       },
+      {
+        path: '/board-research',
+        name: 'board-research',
+        component: () => import('../views/board/Research.vue'),
+      },
     ],
   },
   {
