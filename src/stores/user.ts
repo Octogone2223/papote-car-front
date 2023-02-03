@@ -1,12 +1,4 @@
-interface User {
-  id: number;
-  email: string;
-  phone?: string;
-  username: string;
-  firstname: string;
-  lastname: string;
-  isVerified: boolean;
-}
+import { User } from '@/types';
 
 export const useUserStore = defineStore({
   id: 'userStore',

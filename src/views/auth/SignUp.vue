@@ -100,30 +100,15 @@
       </transition>
     </div>
 
-    <div class="row btn-section">
-      <Button
-        class="p-button-rounded p-button-text p-button-secondary"
-        @click="changeLoginStep(currentStep === 1 ? 3 : currentStep - 1)"
-        icon="pi pi-angle-left"
-        iconPos="left"
-      />
-
-      <div class="col center">
-        {{ 'Etape ' + currentStep + ' sur 3' }}
-      </div>
-
-      <Button
-        class="p-button-rounded"
-        @click="changeLoginStep(currentStep === 3 ? 1 : currentStep + 1)"
-        icon="pi pi-angle-right"
-        iconPos="right"
-      />
-    </div>
+    <StepIndicator :steps="3" @change-step="(step) => changeStep(step)" />
   </form>
 </template>
 
 <script setup lang="ts">
 import { useUserStore } from '@/stores';
+import { UseTransitionOnStep } from '@/composables';
+const { transitionPxInit, transitionPx, currentStep, changeStep } =
+  UseTransitionOnStep;
 
 const user = ref({
   email: '',
@@ -138,21 +123,6 @@ const confirmPassword = ref('');
 
 const { register } = useUserStore();
 const handleRegister = async () => await register(user.value);
-
-const transitionPxInit = ref('100px');
-const transitionPx = ref('-100px');
-
-const currentStep = ref(1);
-const changeLoginStep = (step: number) => {
-  if (step > currentStep.value) {
-    transitionPxInit.value = '100px';
-    transitionPx.value = '-100px';
-  } else {
-    transitionPxInit.value = '-100px';
-    transitionPx.value = '100px';
-  }
-  currentStep.value = step;
-};
 </script>
 
 <style lang="scss" scoped>
@@ -172,10 +142,6 @@ const changeLoginStep = (step: number) => {
 
   .btn-section {
     margin: auto auto 0 auto;
-
-    > div {
-      margin: 0 2rem;
-    }
   }
 
   h1 {

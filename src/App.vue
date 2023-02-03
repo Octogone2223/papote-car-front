@@ -1,6 +1,11 @@
 <script setup lang="ts"></script>
 
 <template>
+  <metainfo>
+    <template v-slot:title="{ content }">{{
+      content ? `${content} | SITE_NAME` : `SITE_NAME`
+    }}</template>
+  </metainfo>
   <router-view></router-view>
 </template>
 
@@ -39,7 +44,6 @@ h6 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
 }
 
 .row {
@@ -60,5 +64,30 @@ h6 {
 a {
   color: var(--primary-color);
   text-decoration: underline dashed;
+}
+
+.p-tabmenu {
+  width: 100%;
+
+  .p-menuitem-icon {
+    font-size: 1rem;
+    margin: 0 !important;
+  }
+
+  .p-tabmenu-nav {
+    place-content: center;
+  }
+
+  .p-menuitem-link {
+    place-content: center;
+  }
+
+  .p-tabmenuitem {
+    width: calc(100% / 5);
+  }
+}
+
+.p-autocomplete-input {
+  width: 100%;
 }
 </style>

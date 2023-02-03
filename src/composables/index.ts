@@ -1,1 +1,1 @@
-export * as UseClipboard from './use-clipboard';
+export * as UseTransitionOnStep from './use-transition-on-step';

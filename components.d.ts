@@ -5,9 +5,13 @@ import '@vue/runtime-core'
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    GMapAutocomplete: typeof import('./src/components/GMapAutocomplete.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    Message: typeof import('./src/components/Message.vue')['default']
+    MessagePreview: typeof import('./src/components/MessagePreview.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    StepIndicator: typeof import('./src/components/StepIndicator.vue')['default']
   }
 }
 
