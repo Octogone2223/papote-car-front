@@ -111,11 +111,11 @@
 
 <script setup lang="ts">
 const items = [
-  { label: 'Informations', tab: 'details' },
-  { label: 'Mot de passe', tab: 'password' },
+  { label: "Informations", tab: "details" },
+  { label: "Mot de passe", tab: "password" },
 ];
 
-const currentTab = ref<'password' | 'details'>('details');
+const currentTab = ref<"password" | "details">("details");
 
 const car = ref(true);
 const isShowingEditVehiculeModal = ref(false);
