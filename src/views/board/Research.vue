@@ -37,8 +37,22 @@
 
       <div v-else-if="currentStep === 2">
         <div>
-
+          <Card>
+            <template #content>
+              <Timeline :value="events">
+                <template #opposite="slotProps">
+                  {{slotProps.item.date}}
+                </template>
+              <template #content="slotProps">
+                {{slotProps.item.status}}
+              </template>
+            </Timeline>
+            </template>
+          </Card>
         </div>
+      </div>
+
+      <div v-else-if="currentStep === 3">
         <div>
           <Card>
             <template #content>
@@ -53,19 +67,32 @@
             </template>
           </Card>
         </div>
-        
-      </div>
-
-      <div v-else-if="currentStep === 3">
-        
       </div>
 
       <div v-else-if="currentStep === 4">
-        
+        <div>
+          <Card>
+            <template #content>
+              <Timeline :value="events">
+                <template #opposite="slotProps">
+                  {{slotProps.item.date}}
+                </template>
+              <template #content="slotProps">
+                {{slotProps.item.status}}
+              </template>
+            </Timeline>
+            </template>
+          </Card>
+        </div>
       </div>
 
       <div v-else-if="currentStep === 5">
-        
+        <h1>Réservation envoyée</h1>
+        <div><i class="pi pi-check-circle"></i></div>
+        <p>
+          Votre réservation a été envoyé à  * Nom conducteur *.
+          Vous recevrez un e-mail dès que votre trajet sera validé.
+        </p>
       </div>
     </transition>
     <StepIndicator
