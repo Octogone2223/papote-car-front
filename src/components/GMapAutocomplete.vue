@@ -13,6 +13,7 @@
       placeholder="Rechercher une adresse"
     />
     <MapboxMap
+      v-if="showMap === true"
       style="height: 400px"
       access-token="pk.eyJ1Ijoia2F5bWthc3NhaTI2OSIsImEiOiJjbDlpZnBkemMwN2prM3V0NWY4aWp6bjF2In0.gAVDArLVqLnjG4o1Uttgkw"
       map-style="mapbox://styles/mapbox/streets-v11"
@@ -45,6 +46,15 @@ interface suggestion {
   label: string;
   center: number[];
 }
+
+const props = defineProps(
+  {
+    showMap:{
+      type:Boolean,
+      default:true
+    }
+  }
+)
 
 const getSuggestions = async () => {
   if (!canCallApi.value) return;
