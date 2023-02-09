@@ -24,18 +24,25 @@
             <label for="date">Date:</label>
             <Calendar v-model="date" :showTime="true" id="date" />
           </div>
-
-          <label for="passengers">Nombre de voyageurs:</label>
-          <InputNumber
-            v-model="passengers"
-            type="number"
-            id="passengers"
-            name="passengers"
-          ></InputNumber>
+          <div>
+            <label for="passengers">Nombre de voyageurs:</label>
+            <InputNumber
+              v-model="passengers"
+              type="number"
+              id="passengers"
+              name="passengers"
+            ></InputNumber>
+          </div>
         </form>
       </div>
 
       <div v-else-if="currentStep === 2">
+        <div class="profil-view">
+          <p>
+            Nantes, France <i class="pi pi-arrow-right"></i> Paris, France
+            <br />1 passager
+          </p>
+        </div>
         <label for="start">Fumeur</label>
         <Checkbox v-model="smoker" />
         <label for="start">Animal accepté</label>
@@ -57,37 +64,43 @@
       </div>
 
       <div v-else-if="currentStep === 3">
-        <div>
-          <Card>
-            <template #content>
-              <Timeline :value="events">
-                <template #opposite="slotProps">
-                  {{ slotProps.item.date }}
-                </template>
-                <template #content="slotProps">
-                  {{ slotProps.item.status }}
-                </template>
-              </Timeline>
-            </template>
-          </Card>
+        <h2>00/00/000 00:00</h2>
+        <br />
+        <Timeline :value="events">
+          <template #opposite="slotProps">
+            {{ slotProps.item.date }}
+          </template>
+          <template #content="slotProps">
+            {{ slotProps.item.status }}
+          </template>
+        </Timeline>
+        <div class="conducteur">
+          <div class="avatar">
+            <p>Jhon Does</p>
+            <Avatar
+              label="A"
+              size="xlarge"
+              class="avatar"
+              style="background: var(--primary-color); color: white"
+            />
+            <i class="pi pi-angle-right"></i>
+            <br /><br />
+            <href> Contacter Jhon Does</href>
+          </div>
         </div>
       </div>
 
       <div v-else-if="currentStep === 4">
-        <div>
-          <Card>
-            <template #content>
-              <Timeline :value="events">
-                <template #opposite="slotProps">
-                  {{ slotProps.item.date }}
-                </template>
-                <template #content="slotProps">
-                  {{ slotProps.item.status }}
-                </template>
-              </Timeline>
-            </template>
-          </Card>
-        </div>
+        <h2>Vérifiez vos informations de réservations</h2>
+        <br />
+        <Timeline :value="events">
+          <template #opposite="slotProps">
+            {{ slotProps.item.date }}
+          </template>
+          <template #content="slotProps">
+            {{ slotProps.item.status }}
+          </template>
+        </Timeline>
       </div>
 
       <div v-else-if="currentStep === 5">
@@ -190,5 +203,14 @@ const events = [
 
 #checkIcon {
   font-size: 5rem;
+}
+
+.profil-view {
+  font-size: 0.8rem;
+  position: relative;
+  background: var(--surface-100);
+  border: var(--primary-color) dashed 1px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 </style>

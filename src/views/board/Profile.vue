@@ -124,7 +124,7 @@ const isShowingEditVehiculeModal = ref(false);
 <style scoped lang="scss">
 .profil-view {
   position: relative;
-  height: calc(100% - 60%);
+  height: calc(40%);
   background: var(--surface-100);
   border: var(--primary-color) dashed 1px;
 
