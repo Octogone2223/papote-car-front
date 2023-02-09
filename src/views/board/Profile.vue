@@ -1,12 +1,6 @@
 <template>
   <div style="height: calc(100vh - 58px - 2rem)">
     <div class="profil-view">
-      <Button
-        label="Retour"
-        class="p-button-text"
-        @click="$router.go(-1)"
-        icon="pi pi-arrow-left"
-      />
       <div class="avatar col center">
         <Avatar
           label="A"
