@@ -87,8 +87,8 @@
       </div>
 
       <div v-else-if="currentStep === 5">
-        <h1>Réservation envoyée</h1>
-        <div><i class="pi pi-check-circle"></i></div>
+        <h2>Réservation envoyée</h2>
+        <div style="padding:35px;text-align: center;"><i class=" pi pi-check-circle" id="checkIcon"></i></div>
         <p>
           Votre réservation a été envoyé à  * Nom conducteur *.
           Vous recevrez un e-mail dès que votre trajet sera validé.
@@ -162,6 +162,10 @@ const { transitionPxInit, transitionPx, currentStep, changeStep } =
   .slide-fade-leave-to {
     transform: translateX(v-bind(transitionPx));
     opacity: 0;
+  }
+
+  #checkIcon{
+    font-size: 5rem
   }
 
 
