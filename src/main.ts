@@ -13,6 +13,8 @@ import AutoComplete from 'primevue/autocomplete';
 import InputNumber from 'primevue/inputnumber';
 import Calendar from 'primevue/calendar';
 import Dialog from 'primevue/dialog';
+import Card from 'primevue/card';
+import Timeline from 'primevue/timeline';
 
 // STYLES
 import 'uno.css';
@@ -37,5 +39,7 @@ app.component('AutoComplete', AutoComplete);
 app.component('InputNumber', InputNumber);
 app.component('Calendar', Calendar);
 app.component('Dialog', Dialog);
+app.component('Card', Card);
+app.component('Timeline', Timeline);
 
 app.mount('#app');
