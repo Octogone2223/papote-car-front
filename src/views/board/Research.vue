@@ -1,20 +1,62 @@
-fdggdfgdf
 <template>
-    <div>
-      <form>
-        <label for="destination">Destination:</label>
-        <input v-model="destination" type="text" id="destination" name="destination">
+  <div class="wrapper">
+    <transition name="slide-fade" mode="out-in" class="transition-wrapper">
+      <div v-if="currentStep === 1">
+        <form>
+          <label for="destination">Destination:</label>
+          <div>
+            <GMapAutocomplete show-map=false  />
+          </div>
+          
+          
+          <!-- <InputText
+            id="destination"
+            v-model="destination"
+            aria-describedby="destination"
+            @keydown.enter=""
+            autocomplete="destination"
+          /> -->
+            <div id="param2">
+              <div class="bicolumn">
+                <label for="date">Date:</label>
+                <Calendar v-model="date" :showTime="true" id="date"  />
+              </div>
+              <div class="bicolumn">
+                <label for="passengers">Nombre de voyageurs:</label>
+                <InputNumber 
+                  v-model="passengers"
+                  type="number"
+                  id="passengers"
+                  name="passengers"></InputNumber>
+              </div>
+            </div>
+        </form>
+      </div>
+
+      <div v-else-if="currentStep === 2">
+        
+      </div>
+
+      <div v-else-if="currentStep === 3">
+        
+      </div>
+
+      <div v-else-if="currentStep === 4">
+        
+      </div>
+
+      <div v-else-if="currentStep === 5">
+        
+      </div>
+    </transition>
+    <StepIndicator
+      :steps="5"
+      @change-step="(step) => changeStep(step)"
+      class="stepper"
+    /> 
+  </div>
   
-        <label for="date">Date:</label>
-        <input v-model="date" type="date" id="date" name="date">
-  
-        <label for="passengers">Nombre de voyageurs:</label>
-        <input v-model="passengers" type="number" id="passengers" name="passengers">
-  
-        <button @click.prevent="searchTrips">Rechercher</button>
-      </form>
-  
-      <div v-if="trips.length">
+      <!-- <div v-if="trips.length">
         <h2>Résultats de la recherche</h2>
         <table>
           <thead>
@@ -33,82 +75,47 @@ fdggdfgdf
           </tbody>
         </table>
       </div>
-    </div>
-  </template>
+    </div> -->
+ 
+</template>
   
-  <script>
-  export default {
-    data() {
-  return {
-    destination: '',
-    date: '',
-    passengers: 0,
-    trips: [] 
-  };
-},
-    methods: {
-      async searchTrips() {
-        console.log('tezstsetestes')
-        // Faire une requête API pour obtenir les trajets en fonction des critères de recherche
-        // ...
-        // Mettre à jour la liste de trajets en utilisant les données obtenues à partir de l'API
+<script setup lang="ts">
+import { UseTransitionOnStep } from '@/composables';
+const { transitionPxInit, transitionPx, currentStep, changeStep } =
+  UseTransitionOnStep;
+</script>
+  
+<style scoped lang="scss">
+  .wrapper {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
 
-
-        // this.trips = [
-        //   { id: 1, destination: this.destination, date: this.date, passengers: this.passengers },
-        //   // ...
-        // ];
-      }
+    > .stepper {
+      margin: auto auto 0 auto;
     }
-  };
-  </script>
-  
-  <script setup lang="ts"></script>
-  
-  <style scoped>
+  }
 
-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 1rem;
-}
+  .slide-fade-enter-from {
+    transform: translateX(v-bind(transitionPxInit));
+    opacity: 0;
+  }
+  .slide-fade-enter-active,
+  .slide-fade-leave-active {
+    transition: all 0.3s ease;
+  }
+  .slide-fade-leave-to {
+    transform: translateX(v-bind(transitionPx));
+    opacity: 0;
+  }
 
-form label {
-  margin-bottom: 0.5rem;
-}
+  #param2 {
+    display: flex;
+    width: 100%;
+    margin:auto;
+  }
 
-form input[type="text"],
-form input[type="date"],
-form input[type="number"] {
-  width: 100%;
-  padding: 0.5rem;
-  margin-bottom: 1rem;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-}
-
-form button {
-  padding: 0.5rem 1rem;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 0.25rem;
-  cursor: pointer;
-}
-
-table {
-  margin-top: 1rem;
-  width: 100%;
-  border-collapse: collapse;
-}
-
-table th,
-table td {
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-}
-
-
+  .bicolumn{
+    width:50%;
+  }
 </style>
-  
