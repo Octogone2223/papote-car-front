@@ -10,6 +10,8 @@ import TabMenu from 'primevue/tabmenu';
 import Divider from 'primevue/divider';
 import Avatar from 'primevue/avatar';
 import AutoComplete from 'primevue/autocomplete';
+import InputNumber from 'primevue/inputnumber';
+import Calendar from 'primevue/calendar';
 
 // STYLES
 import 'uno.css';
@@ -30,5 +32,7 @@ app.component('TabMenu', TabMenu);
 app.component('Divider', Divider);
 app.component('Avatar', Avatar);
 app.component('AutoComplete', AutoComplete);
+app.component('InputNumber', InputNumber);
+app.component('Calendar', Calendar);
 
 app.mount('#app');
