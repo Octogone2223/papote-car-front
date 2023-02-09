@@ -27,6 +27,11 @@ const routes = [
         component: () => import('../views/board/Research.vue'),
       },
       {
+        path: '/my-travels',
+        name: 'my-travels',
+        component: () => import('../views/board/MyTravels.vue'),
+      },
+      {
         path: '/mon-profil',
         name: 'board-profile',
         component: () => import('../views/board/Profile.vue'),
