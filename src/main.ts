@@ -12,6 +12,8 @@ import Avatar from 'primevue/avatar';
 import AutoComplete from 'primevue/autocomplete';
 import Calendar from 'primevue/calendar';
 import InputNumber from 'primevue/inputnumber';
+import Card from 'primevue/card';
+import Timeline from 'primevue/timeline';
 
 
 // STYLES
@@ -35,5 +37,7 @@ app.component('Divider', Divider);
 app.component('Avatar', Avatar);
 app.component('AutoComplete', AutoComplete);
 app.component('Calendar', Calendar);
+app.component('Card', Card);
+app.component('Timeline', Timeline);
 
 app.mount('#app');

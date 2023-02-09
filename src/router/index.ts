@@ -17,7 +17,7 @@ const routes = [
         component: () => import('../views/board/AddTravel.vue'),
       },
       {
-        path: '/board-research',
+        path: '/search',
         name: 'board-research',
         component: () => import('../views/board/Research.vue'),
       },
