@@ -12,6 +12,11 @@ const routes = [
         component: () => import('../views/board/Messages.vue'),
       },
       {
+        path: '/messages/:id',
+        name: 'board-messages-id',
+        component: () => import('../views/board/Message.vue'),
+      },
+      {
         path: '/publier',
         name: 'board-publish',
         component: () => import('../views/board/AddTravel.vue'),

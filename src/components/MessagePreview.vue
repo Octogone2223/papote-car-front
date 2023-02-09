@@ -1,14 +1,14 @@
 <template>
   <div class="col">
     <h4>{{ author }}</h4>
-    <div class="row message-content" @click="$router.push({ name: 'chat' })">
+    <div class="row message-content">
       <p>{{ truncatedContent }}</p>
       <Avatar
         :label="author[0]"
         style="padding: 1.5rem; margin: 0 1rem 0"
         size="large"
       />
-      <i class="pi pi-chevron-right"></i>
+      <i class="pi pi-chevron-right" v-if="onclick" @click="onclick"></i>
     </div>
     <Divider
       style="
@@ -21,7 +21,11 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{ content: string; author: string }>();
+const props = defineProps<{
+  content: string;
+  author: string;
+  onclick?: () => void;
+}>();
 
 const truncatedContent = computed(() => {
   if (props.content.length > 50) {

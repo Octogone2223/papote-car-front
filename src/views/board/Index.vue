@@ -10,14 +10,18 @@
     <router-view></router-view>
   </div>
 
-  <TabMenu :model="menu" class="tabmenu" />
+  <TabMenu
+    :model="menu"
+    class="tabmenu"
+    v-show="$route.name !== 'board-messages-id'"
+  />
 </template>
 
 <script setup lang="ts">
 const menu = [
-  { icon: 'pi pi-search', to: 'search' },
-  { icon: 'pi pi-comments', to: 'messages' },
-  { icon: 'pi pi-plus-circle', to: 'publier' },
+  { icon: 'pi pi-search', to: '/search' },
+  { icon: 'pi pi-comments', to: '/messages' },
+  { icon: 'pi pi-plus-circle', to: '/publier' },
   { icon: 'pi pi-car' },
   { icon: 'pi pi-user' },
 ];
