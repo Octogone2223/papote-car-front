@@ -23,7 +23,7 @@ const menu = [
   { icon: 'pi pi-comments', to: '/messages' },
   { icon: 'pi pi-plus-circle', to: '/publier' },
   { icon: 'pi pi-car' },
-  { icon: 'pi pi-user' },
+  { icon: 'pi pi-user', to: '/mon-profil' },
 ];
 </script>
 

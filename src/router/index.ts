@@ -26,12 +26,27 @@ const routes = [
         name: 'board-research',
         component: () => import('../views/board/Research.vue'),
       },
+      {
+        path: '/mon-profil',
+        name: 'board-profile',
+        component: () => import('../views/board/Profile.vue'),
+      },
     ],
   },
   {
     path: "/s'enregistrer",
     name: 'register',
     component: () => import('../views/auth/SignUp.vue'),
+  },
+  {
+    path: '/user-validation/:token',
+    name: 'user-validation',
+    beforeEnter: (_to: any, _from: any, next: (route: string) => void) => {
+      console.log('CALL API TO VALIDATE USER');
+      next('/se-connecter');
+    },
+    // INVISIBLE COMPONENT BECAUSE WE WAIT & REDIRECT TO LOGIN
+    component: () => ({ template: '<div>Validation en cours...</div>' }),
   },
   {
     path: '/se-connecter',

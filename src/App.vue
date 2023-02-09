@@ -61,7 +61,7 @@ a {
   text-decoration: underline dashed;
 }
 
-.p-tabmenu {
+.p-tabmenu:not(.profile) {
   width: 100%;
 
   .p-menuitem-icon {
@@ -79,6 +79,29 @@ a {
 
   .p-tabmenuitem {
     width: calc(100% / 5);
+  }
+}
+
+.p-tabmenu.profile {
+  width: 100%;
+
+  .p-menuitem-icon {
+    font-size: 1rem;
+    margin: 0 !important;
+  }
+
+  .p-tabmenu-nav {
+    place-content: center;
+    border: 1px solid var(--surface-300) !important;
+    margin-top: 4px;
+  }
+
+  .p-menuitem-link {
+    place-content: center;
+  }
+
+  .p-tabmenuitem {
+    width: calc(100% / 2);
   }
 }
 

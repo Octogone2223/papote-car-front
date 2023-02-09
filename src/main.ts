@@ -12,6 +12,7 @@ import Avatar from 'primevue/avatar';
 import AutoComplete from 'primevue/autocomplete';
 import InputNumber from 'primevue/inputnumber';
 import Calendar from 'primevue/calendar';
+import Dialog from 'primevue/dialog';
 
 // STYLES
 import 'uno.css';
@@ -34,5 +35,6 @@ app.component('Avatar', Avatar);
 app.component('AutoComplete', AutoComplete);
 app.component('InputNumber', InputNumber);
 app.component('Calendar', Calendar);
+app.component('Dialog', Dialog);
 
 app.mount('#app');
