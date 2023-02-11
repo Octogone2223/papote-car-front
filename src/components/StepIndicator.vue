@@ -2,7 +2,7 @@
   <div class="row btn-section">
     <Button
       class="p-button-rounded p-button-text p-button-secondary"
-      @click="changeStep(currentStep === 1 ? steps : currentStep - 1)"
+      @click="currentStep > 1 && changeStep(currentStep - 1)"
       icon="pi pi-angle-left"
       iconPos="left"
     />
@@ -13,7 +13,9 @@
 
     <Button
       class="p-button-rounded"
-      @click="changeStep(currentStep === steps ? 1 : currentStep + 1)"
+      @click="
+        currentStep === steps ? emits('complete') : changeStep(currentStep + 1)
+      "
       icon="pi pi-angle-right"
       iconPos="right"
     />
@@ -28,6 +30,7 @@ const props = defineProps<{
 
 const emits = defineEmits<{
   (event: 'change-step', step: number): void;
+  (event: 'complete'): void;
 }>();
 
 const currentStep = ref(1);

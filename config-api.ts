@@ -32,6 +32,7 @@ export const kyApi = ky
       'content-type': 'application/json',
     },
     throwHttpErrors: false,
+    credentials: 'include',
   })
   .extend({
     hooks,

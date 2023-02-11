@@ -31,7 +31,16 @@ export const useUserStore = defineStore({
     async register(input: RegisterInput) {
       this.loading = true;
 
-      await userApi.register(input);
+      await userApi.sendRegisterEmail(input);
+
+      this.loading = false;
+    },
+
+    async whoAmI() {
+      this.loading = true;
+
+      const user = await userApi.whoami();
+      this.currentUser = user;
 
       this.loading = false;
     },

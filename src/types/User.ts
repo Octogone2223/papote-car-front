@@ -3,7 +3,7 @@ export type User = {
   email: string;
   phone?: string;
   username: string;
-  firstname: string;
-  lastname: string;
+  firstName: string;
+  lastName: string;
   isVerified: boolean;
 };

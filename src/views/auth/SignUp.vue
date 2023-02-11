@@ -6,33 +6,33 @@
       <transition name="slide-fade" mode="out-in" class="transition-wrapper">
         <div v-if="currentStep === 1">
           <div class="col">
-            <label for="firstname">Prénom</label>
+            <label for="firstName">Prénom</label>
             <InputText
-              id="firstname"
-              v-model="user.firstname"
-              aria-describedby="firstname"
-              autocomplete="firstname"
+              id="firstName"
+              v-model="user.firstName"
+              aria-describedby="firstName"
+              autocomplete="firstName"
               :class="{
-                'p-invalid': v$.user.firstname.$error,
+                'p-invalid': v$.user.firstName.$error,
               }"
               @keydown.enter="() => handleRegister"
             />
-            <ErrorsHandler :errors="v$.user.firstname.$errors" />
+            <ErrorsHandler :errors="v$.user.firstName.$errors" />
           </div>
 
           <div class="col">
-            <label for="lastname">Nom</label>
+            <label for="lastName">Nom</label>
             <InputText
-              id="lastname"
-              v-model="user.lastname"
-              aria-describedby="lastname"
+              id="lastName"
+              v-model="user.lastName"
+              aria-describedby="lastName"
               @keydown.enter="() => handleRegister"
-              autocomplete="lastname"
+              autocomplete="lastName"
               :class="{
-                'p-invalid': v$.user.lastname.$error,
+                'p-invalid': v$.user.lastName.$error,
               }"
             />
-            <ErrorsHandler :errors="v$.user.lastname.$errors" />
+            <ErrorsHandler :errors="v$.user.lastName.$errors" />
           </div>
 
           <div class="col">
@@ -129,7 +129,8 @@
 
     <StepIndicator
       :steps="3"
-      @change-step="(step) => handleRegister(step)"
+      @change-step="(step) => changeStep(step)"
+      @complete="() => handleRegister()"
       :handler="handleValidation"
     />
   </form>
@@ -141,6 +142,7 @@ import { useVuelidate } from '@vuelidate/core';
 import {
   required as requiredR,
   email as emailR,
+  minLength as minLengthR,
   helpers,
 } from '@vuelidate/validators';
 import { UseTransitionOnStep } from '@/composables';
@@ -150,8 +152,8 @@ const { transitionPxInit, transitionPx, currentStep, changeStep } =
 const user = ref({
   email: '',
   password: '',
-  firstname: '',
-  lastname: '',
+  firstName: '',
+  lastName: '',
   phone: '',
   username: '',
 });
@@ -162,10 +164,10 @@ const confirmPassword = ref('');
 const alreadyExists = ref(false);
 const rules = {
   user: {
-    firstname: {
+    firstName: {
       required: helpers.withMessage(`Un prénom est requis`, requiredR),
     },
-    lastname: {
+    lastName: {
       required: helpers.withMessage(`Un nom est requis`, requiredR),
     },
     username: {
@@ -192,6 +194,10 @@ const rules = {
     },
     password: {
       required: helpers.withMessage(`Un mot de passe est requis`, requiredR),
+      minLength: helpers.withMessage(
+        `Le mot de passe doit contenir au moins 6 caractères`,
+        minLengthR(6)
+      ),
     },
   },
   confirmPassword: {
@@ -213,8 +219,8 @@ const v$ = useVuelidate(
 );
 
 const userStore = useUserStore();
-const handleRegister = async (step: number) => {
-  changeStep(step);
+const handleRegister = async () => {
+  console.log('🚀 ~ file: SignUp.vue:223 ~ handleRegister ~ handleRegister');
   await userStore.register(user.value).catch((err) => {
     if (err.response.status === 409) {
       alreadyExists.value = true;
@@ -230,8 +236,8 @@ const handleValidation = async () => {
 
   if (currentStep.value === 1) {
     isFormCorrect =
-      !v$.value.user.firstname.$invalid &&
-      !v$.value.user.lastname.$invalid &&
+      !v$.value.user.firstName.$invalid &&
+      !v$.value.user.lastName.$invalid &&
       !v$.value.user.username.$invalid;
   } else if (currentStep.value === 2) {
     isFormCorrect =

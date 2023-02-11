@@ -1,3 +1,5 @@
+import { useUserStore } from './../stores/user';
+import { userApi } from '@/api';
 import { createRouter, createWebHistory } from 'vue-router';
 
 const routes = [
@@ -44,10 +46,12 @@ const routes = [
     component: () => import('../views/auth/SignUp.vue'),
   },
   {
-    path: '/user-validation/:token',
+    path: '/user-validation',
     name: 'user-validation',
-    beforeEnter: (_to: any, _from: any, next: (route: string) => void) => {
-      console.log('CALL API TO VALIDATE USER');
+    beforeEnter: async (to: any, _from: any, next: (route: string) => void) => {
+      const { token } = to.query;
+      await userApi.register(token);
+
       next('/se-connecter');
     },
     // INVISIBLE COMPONENT BECAUSE WE WAIT & REDIRECT TO LOGIN
@@ -63,6 +67,25 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+});
+
+router.beforeEach(async (to, _from, next) => {
+  const publicPages = ['/se-connecter', "/s'enregistrer", '/user-validation'];
+  const authRequired = !publicPages.includes(to.path);
+
+  const loggedIn = useUserStore().isLogin;
+
+  if (!loggedIn) {
+    await useUserStore()
+      .whoAmI()
+      .catch(() => {});
+  }
+
+  if (authRequired && !loggedIn) {
+    return next('/se-connecter');
+  }
+
+  next();
 });
 
 export default router;

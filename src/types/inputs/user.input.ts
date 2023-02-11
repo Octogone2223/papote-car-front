@@ -4,8 +4,8 @@ export interface LoginInput {
 }
 
 export interface RegisterInput {
-  firstname: string;
-  lastname: string;
+  firstName: string;
+  lastName: string;
   username: string;
   email: string;
   phone?: string;

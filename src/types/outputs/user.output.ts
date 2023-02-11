@@ -1,9 +1,14 @@
 export interface LoginOutput {
   id: number;
-  firstname: string;
-  lastname: string;
+  firstName: string;
+  lastName: string;
   username: string;
   email: string;
   phone: string;
-  token: string;
+  isVerified: boolean;
+}
+
+export interface SendRegisterEmailOutput {
+  success: true;
+  message: 'Verification email sent successfully';
 }

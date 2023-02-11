@@ -1,9 +1,10 @@
+import { LoginOutput, SendRegisterEmailOutput } from '@/types/outputs';
 import { LoginInput, RegisterInput } from '../types/inputs/user.input';
 import { kyApi } from '~/config-api';
 
 const ressource = 'users';
 
-const login = async (input: LoginInput) => {
+const login = async (input: LoginInput): Promise<LoginOutput> => {
   const response = await kyApi.post(`${ressource}/login`, {
     json: {
       ...input,
@@ -12,8 +13,10 @@ const login = async (input: LoginInput) => {
   return response.json();
 };
 
-const register = async (input: RegisterInput) => {
-  const response = await kyApi.post(`${ressource}/register`, {
+const sendRegisterEmail = async (
+  input: RegisterInput
+): Promise<SendRegisterEmailOutput> => {
+  const response = await kyApi.post(`${ressource}/send-verification-email`, {
     json: {
       ...input,
     },
@@ -21,4 +24,18 @@ const register = async (input: RegisterInput) => {
   return response.json();
 };
 
-export { login, register };
+const register = async (token: string) => {
+  const response = await kyApi.post(`${ressource}/register`, {
+    json: {
+      token,
+    },
+  });
+  return response.json();
+};
+
+const whoami = async () => {
+  const response = await kyApi.get(`${ressource}/whoami`);
+  return response.json();
+};
+
+export { login, register, sendRegisterEmail, whoami };
