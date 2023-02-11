@@ -15,6 +15,7 @@ import Calendar from 'primevue/calendar';
 import Dialog from 'primevue/dialog';
 import Card from 'primevue/card';
 import Timeline from 'primevue/timeline';
+import Checkbox from 'primevue/checkbox';
 
 // STYLES
 import 'uno.css';
@@ -40,5 +41,6 @@ app.component('Calendar', Calendar);
 app.component('Dialog', Dialog);
 app.component('Card', Card);
 app.component('Timeline', Timeline);
+app.component('Checkbox', Checkbox);
 
 app.mount('#app');

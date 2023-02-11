@@ -111,11 +111,11 @@
 
 <script setup lang="ts">
 const items = [
-  { label: 'Informations', tab: 'details' },
-  { label: 'Mot de passe', tab: 'password' },
+  { label: "Informations", tab: "details" },
+  { label: "Mot de passe", tab: "password" },
 ];
 
-const currentTab = ref<'password' | 'details'>('details');
+const currentTab = ref<"password" | "details">("details");
 
 const car = ref(true);
 const isShowingEditVehiculeModal = ref(false);
@@ -124,7 +124,7 @@ const isShowingEditVehiculeModal = ref(false);
 <style scoped lang="scss">
 .profil-view {
   position: relative;
-  height: calc(100% - 60%);
+  height: calc(40%);
   background: var(--surface-100);
   border: var(--primary-color) dashed 1px;
 
