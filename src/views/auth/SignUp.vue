@@ -1,5 +1,5 @@
 <template>
-  <form class="auth-container col" @submit.prevent="handleRegister">
+  <form class="auth-container col" @submit.prevent="() => handleRegister">
     <div class="col center">
       <h1>Bienvenue parmi nous&nbsp;!</h1>
 
@@ -11,9 +11,13 @@
               id="firstname"
               v-model="user.firstname"
               aria-describedby="firstname"
-              @keydown.enter="handleRegister"
               autocomplete="firstname"
+              :class="{
+                'p-invalid': v$.user.firstname.$error,
+              }"
+              @keydown.enter="() => handleRegister"
             />
+            <ErrorsHandler :errors="v$.user.firstname.$errors" />
           </div>
 
           <div class="col">
@@ -22,9 +26,13 @@
               id="lastname"
               v-model="user.lastname"
               aria-describedby="lastname"
-              @keydown.enter="handleRegister"
+              @keydown.enter="() => handleRegister"
               autocomplete="lastname"
+              :class="{
+                'p-invalid': v$.user.lastname.$error,
+              }"
             />
+            <ErrorsHandler :errors="v$.user.lastname.$errors" />
           </div>
 
           <div class="col">
@@ -33,9 +41,13 @@
               id="username"
               v-model="user.username"
               aria-describedby="username"
-              @keydown.enter="handleRegister"
+              @keydown.enter="() => handleRegister"
               autocomplete="username"
+              :class="{
+                'p-invalid': v$.user.username.$error,
+              }"
             />
+            <ErrorsHandler :errors="v$.user.username.$errors" />
           </div>
 
           <div class="col">
@@ -55,9 +67,13 @@
               id="email"
               v-model="user.email"
               aria-describedby="email"
-              @keydown.enter="handleRegister"
+              @keydown.enter="() => handleRegister"
               autocomplete="email"
+              :class="{
+                'p-invalid': v$.user.email.$error,
+              }"
             />
+            <ErrorsHandler :errors="v$.user.email.$errors" />
           </div>
 
           <div class="col">
@@ -67,9 +83,13 @@
               type="phone"
               v-model="user.phone"
               aria-describedby="phone"
-              @keydown.enter="handleRegister"
+              @keydown.enter="() => handleRegister"
               autocomplete="phone"
+              :class="{
+                'p-invalid': v$.user.phone.$error,
+              }"
             />
+            <ErrorsHandler :errors="v$.user.phone.$errors" />
           </div>
         </div>
 
@@ -80,9 +100,13 @@
               id="password"
               v-model="user.password"
               aria-describedby="password"
-              @keydown.enter="handleRegister"
+              @keydown.enter="() => handleRegister"
               autocomplete="password"
+              :class="{
+                'p-invalid': v$.user.password.$error,
+              }"
             />
+            <ErrorsHandler :errors="v$.user.password.$errors" />
           </div>
 
           <div class="col">
@@ -92,20 +116,33 @@
               type="confirmPassword"
               v-model="confirmPassword"
               aria-describedby="confirmPassword"
-              @keydown.enter="handleRegister"
               autocomplete="confirmPassword"
+              :class="{
+                'p-invalid': v$.confirmPassword.$error,
+              }"
             />
+            <ErrorsHandler :errors="v$.confirmPassword.$errors" />
           </div>
         </div>
       </transition>
     </div>
 
-    <StepIndicator :steps="3" @change-step="(step) => changeStep(step)" />
+    <StepIndicator
+      :steps="3"
+      @change-step="(step) => handleRegister(step)"
+      :handler="handleValidation"
+    />
   </form>
 </template>
 
 <script setup lang="ts">
 import { useUserStore } from '@/stores';
+import { useVuelidate } from '@vuelidate/core';
+import {
+  required as requiredR,
+  email as emailR,
+  helpers,
+} from '@vuelidate/validators';
 import { UseTransitionOnStep } from '@/composables';
 const { transitionPxInit, transitionPx, currentStep, changeStep } =
   UseTransitionOnStep;
@@ -121,8 +158,96 @@ const user = ref({
 
 const confirmPassword = ref('');
 
-const { register } = useUserStore();
-const handleRegister = async () => await register(user.value);
+/* VALIDATIONS */
+const alreadyExists = ref(false);
+const rules = {
+  user: {
+    firstname: {
+      required: helpers.withMessage(`Un prénom est requis`, requiredR),
+    },
+    lastname: {
+      required: helpers.withMessage(`Un nom est requis`, requiredR),
+    },
+    username: {
+      required: helpers.withMessage(
+        `Un nom d'utilisateur est requis`,
+        requiredR
+      ),
+    },
+    phone: {
+      required: helpers.withMessage(
+        `Un numéro de téléphone est requis`,
+        requiredR
+      ),
+    },
+    email: {
+      required: helpers.withMessage(`Un email est requis`, requiredR),
+      email: helpers.withMessage(`L'email n'est pas valide`, emailR),
+      exist: helpers.withMessage(
+        `<u>Cet email est déjà utilisé, se connecter ?</u>`,
+        () => {
+          return !alreadyExists.value;
+        }
+      ),
+    },
+    password: {
+      required: helpers.withMessage(`Un mot de passe est requis`, requiredR),
+    },
+  },
+  confirmPassword: {
+    sameAsPassword: helpers.withMessage(
+      `Les mots de passe ne correspondent pas`,
+      () => {
+        return user.value.password === confirmPassword.value;
+      }
+    ),
+  },
+};
+
+const v$ = useVuelidate(
+  rules,
+  { user: user.value, confirmPassword: confirmPassword.value },
+  {
+    $autoDirty: true,
+  }
+);
+
+const userStore = useUserStore();
+const handleRegister = async (step: number) => {
+  changeStep(step);
+  await userStore.register(user.value).catch((err) => {
+    if (err.response.status === 409) {
+      alreadyExists.value = true;
+      changeStep(2);
+      v$.value.user.email.$touch();
+    }
+  });
+};
+
+const handleValidation = async () => {
+  let isFormCorrect;
+  v$.value.$reset();
+
+  if (currentStep.value === 1) {
+    isFormCorrect =
+      !v$.value.user.firstname.$invalid &&
+      !v$.value.user.lastname.$invalid &&
+      !v$.value.user.username.$invalid;
+  } else if (currentStep.value === 2) {
+    isFormCorrect =
+      !v$.value.user.email.$invalid && !v$.value.user.phone.$invalid;
+  } else if (currentStep.value === 3) {
+    isFormCorrect =
+      !v$.value.confirmPassword.$invalid && !v$.value.user.password.$invalid;
+  }
+
+  if (!isFormCorrect) {
+    await v$.value.$validate();
+    return false;
+  }
+
+  return true;
+};
 </script>
 
 <style lang="scss" scoped>

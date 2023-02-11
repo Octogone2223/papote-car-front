@@ -1,4 +1,6 @@
 import { User } from '@/types';
+import { userApi } from '@/api';
+import { LoginInput, RegisterInput } from '@/types/inputs';
 
 export const useUserStore = defineStore({
   id: 'userStore',
@@ -6,7 +8,7 @@ export const useUserStore = defineStore({
   state: () => ({
     currentUser: null as User | null,
     loading: false,
-    error: null,
+    // errors: {} as { [k in keyof User]?: string[] } & { password?: string[] },
   }),
 
   getters: {
@@ -16,32 +18,20 @@ export const useUserStore = defineStore({
   },
 
   actions: {
-    async login(loginDto: { email: string; password: string }) {
+    async login(input: LoginInput) {
       this.loading = true;
-      const user = {
-        id: 1,
-        email: 'dazd@gmail.com',
-        phone: '123456789',
-        username: 'dazd',
-        firstname: 'John',
-        lastname: 'Doe',
-        isVerified: true,
-      };
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const user = await userApi.login(input);
+      // this.errors = errorsHandler(err.message);
 
       this.currentUser = user;
       this.loading = false;
     },
 
-    async register(registerDto: {
-      email: string;
-      password: string;
-      firstname: string;
-      lastname: string;
-    }) {
+    async register(input: RegisterInput) {
       this.loading = true;
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      await userApi.register(input);
 
       this.loading = false;
     },

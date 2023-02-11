@@ -21,8 +21,9 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   steps: number;
+  handler?: () => Promise<boolean>;
 }>();
 
 const emits = defineEmits<{
@@ -30,7 +31,9 @@ const emits = defineEmits<{
 }>();
 
 const currentStep = ref(1);
-const changeStep = (step: number) => {
+const changeStep = async (step: number) => {
+  if (props.handler && !(await props.handler())) return;
+
   currentStep.value = step;
   emits('change-step', step);
 };

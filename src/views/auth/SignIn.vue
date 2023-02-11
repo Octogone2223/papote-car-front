@@ -11,7 +11,14 @@
           aria-describedby="email"
           @keydown.enter="handleLogin"
           autocomplete="email"
+          :class="{
+            'p-invalid': v$.user.email.$error || v$.credentials.$error,
+          }"
+          @change="isAnErrorServer = false"
         />
+        <ErrorsHandler :errors="v$.user.email.$errors" />
+
+        <ErrorsHandler :errors="v$.credentials.$errors" />
       </div>
 
       <div class="col">
@@ -23,7 +30,12 @@
           aria-describedby="password"
           @keydown.enter="handleLogin"
           autocomplete="password"
+          :class="{
+            'p-invalid': v$.user.password.$error || v$.credentials.$error,
+          }"
+          @change="isAnErrorServer = false"
         />
+        <ErrorsHandler :errors="v$.user.password.$errors" />
       </div>
 
       <div class="col">
@@ -44,14 +56,57 @@
 
 <script setup lang="ts">
 import { useUserStore } from '@/stores';
+import { useVuelidate } from '@vuelidate/core';
+import {
+  required as requiredR,
+  email as emailR,
+  helpers,
+} from '@vuelidate/validators';
 
 const user = ref({
   email: '',
   password: '',
 });
 
-const { login } = useUserStore();
-const handleLogin = async () => await login(user.value);
+/* VALIDATIONS */
+const isAnErrorServer = ref(false); // Prevent to display server error
+const rules = {
+  user: {
+    email: {
+      required: helpers.withMessage(`Un email est requis`, requiredR),
+      email: helpers.withMessage(`L'email n'est pas valide`, emailR),
+    },
+    password: {
+      required: helpers.withMessage(`Un mot de passe est requis`, requiredR),
+    },
+  },
+  credentials: {
+    userExist: helpers.withMessage(
+      'Email ou mot de passe incorrect',
+      () => !isAnErrorServer.value
+    ),
+  },
+};
+
+const v$ = useVuelidate(
+  rules,
+  { user: user.value, credentials: isAnErrorServer.value },
+  {
+    $autoDirty: true,
+  }
+);
+
+const userStore = useUserStore();
+
+const handleLogin = async () => {
+  const isFormValid = await v$.value.$validate();
+
+  if (!isFormValid) return;
+
+  await userStore.login(user.value).catch(() => {
+    isAnErrorServer.value = true;
+  });
+};
 </script>
 
 <style lang="scss" scoped>

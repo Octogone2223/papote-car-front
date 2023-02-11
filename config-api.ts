@@ -11,13 +11,15 @@ const hooks = {
   ],
 
   afterResponse: [
-    (
+    async (
       request: Input,
       options: any,
-      response: { status: number; ok: boolean }
+      response: { status: number; ok: boolean; json: () => Promise<any> }
     ) => {
-      if (response.status === 401) {
-        console.log('UNATHORIZED');
+      const body = await response.json();
+
+      if (body.error) {
+        throw new Error(body.message);
       }
     },
   ],
@@ -29,6 +31,7 @@ export const kyApi = ky
     headers: {
       'content-type': 'application/json',
     },
+    throwHttpErrors: false,
   })
   .extend({
     hooks,

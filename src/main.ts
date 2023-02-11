@@ -30,7 +30,6 @@ app.use(pinia);
 app.use(PrimeVue);
 
 app.component('InputText', InputText);
-app.component('InputNumber', InputNumber);
 app.component('Button', Button);
 app.component('TabMenu', TabMenu);
 app.component('Divider', Divider);

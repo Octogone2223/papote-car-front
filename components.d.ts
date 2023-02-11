@@ -5,6 +5,7 @@ import '@vue/runtime-core'
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    ErrorsHandler: typeof import('./src/components/ErrorsHandler.vue')['default']
     GMapAutocomplete: typeof import('./src/components/GMapAutocomplete.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     Message: typeof import('./src/components/Message.vue')['default']
