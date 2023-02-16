@@ -220,7 +220,6 @@ const v$ = useVuelidate(
 
 const userStore = useUserStore();
 const handleRegister = async () => {
-  console.log('🚀 ~ file: SignUp.vue:223 ~ handleRegister ~ handleRegister');
   await userStore.register(user.value).catch((err) => {
     if (err.response.status === 409) {
       alreadyExists.value = true;

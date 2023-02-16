@@ -9,22 +9,18 @@ import { kyApi } from '~/config-api';
 
 const ressource = 'users';
 
-const login = async (input: LoginInput): Promise<LoginOutput> => {
+const login = async (json: LoginInput): Promise<LoginOutput> => {
   const response = await kyApi.post(`${ressource}/login`, {
-    json: {
-      ...input,
-    },
+    json,
   });
   return response.json();
 };
 
 const sendRegisterEmail = async (
-  input: RegisterInput
+  json: RegisterInput
 ): Promise<SendRegisterEmailOutput> => {
   const response = await kyApi.post(`${ressource}/send-verification-email`, {
-    json: {
-      ...input,
-    },
+    json,
   });
   return response.json();
 };
@@ -38,12 +34,8 @@ const register = async (token: string): Promise<RegisterOutput> => {
   return response.json();
 };
 
-const getNewTokens = async (refreshToken: string): Promise<RegisterOutput> => {
-  const response = await kyApi.post(`${ressource}/refresh-tokens`, {
-    json: {
-      refreshToken,
-    },
-  });
+const getNewTokens = async (): Promise<RegisterOutput> => {
+  const response = await kyApi.get(`${ressource}/refresh-tokens`);
 
   return response.json();
 };

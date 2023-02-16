@@ -27,9 +27,9 @@ const hooks = {
         const currentRefreshToken = localStorage.getItem('refreshToken');
 
         if (currentRefreshToken) {
-          const { accessToken, refreshToken } = await userApi.getNewTokens(
-            currentRefreshToken
-          );
+          localStorage.setItem('accessToken', currentRefreshToken);
+
+          const { accessToken, refreshToken } = await userApi.getNewTokens();
 
           localStorage.setItem('accessToken', accessToken);
           localStorage.setItem('refreshToken', refreshToken);
@@ -51,7 +51,6 @@ export const kyApi = ky
     headers: {
       'content-type': 'application/json',
     },
-    throwHttpErrors: false,
   })
   .extend({
     hooks,

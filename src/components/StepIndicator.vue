@@ -25,7 +25,7 @@
 <script setup lang="ts">
 const props = defineProps<{
   steps: number;
-  handler?: () => Promise<boolean>;
+  handler?: () => Promise<boolean> | boolean;
 }>();
 
 const emits = defineEmits<{
