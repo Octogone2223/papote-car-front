@@ -1,4 +1,9 @@
-import { LoginOutput, SendRegisterEmailOutput } from '@/types/outputs';
+import {
+  LoginOutput,
+  RegisterOutput,
+  SendRegisterEmailOutput,
+  WhoIAmOutput,
+} from '@/types/outputs';
 import { LoginInput, RegisterInput } from '../types/inputs/user.input';
 import { kyApi } from '~/config-api';
 
@@ -24,7 +29,7 @@ const sendRegisterEmail = async (
   return response.json();
 };
 
-const register = async (token: string) => {
+const register = async (token: string): Promise<RegisterOutput> => {
   const response = await kyApi.post(`${ressource}/register`, {
     json: {
       token,
@@ -33,9 +38,19 @@ const register = async (token: string) => {
   return response.json();
 };
 
-const whoami = async () => {
+const getNewTokens = async (refreshToken: string): Promise<RegisterOutput> => {
+  const response = await kyApi.post(`${ressource}/refresh-tokens`, {
+    json: {
+      refreshToken,
+    },
+  });
+
+  return response.json();
+};
+
+const whoami = async (): Promise<WhoIAmOutput> => {
   const response = await kyApi.get(`${ressource}/whoami`);
   return response.json();
 };
 
-export { login, register, sendRegisterEmail, whoami };
+export { login, register, sendRegisterEmail, whoami, getNewTokens };

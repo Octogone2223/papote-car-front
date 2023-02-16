@@ -14,7 +14,7 @@
           :class="{
             'p-invalid': v$.user.email.$error || v$.credentials.$error,
           }"
-          @change="isAnErrorServer = false"
+          @focus="isAnErrorServer = false"
         />
         <ErrorsHandler :errors="v$.user.email.$errors" />
 
@@ -33,7 +33,7 @@
           :class="{
             'p-invalid': v$.user.password.$error || v$.credentials.$error,
           }"
-          @change="isAnErrorServer = false"
+          @focus="isAnErrorServer = false"
         />
         <ErrorsHandler :errors="v$.user.password.$errors" />
       </div>
@@ -55,6 +55,7 @@
 </template>
 
 <script setup lang="ts">
+import router from '@/router';
 import { useUserStore } from '@/stores';
 import { useVuelidate } from '@vuelidate/core';
 import {
@@ -106,6 +107,10 @@ const handleLogin = async () => {
   await userStore.login(user.value).catch(() => {
     isAnErrorServer.value = true;
   });
+
+  if (userStore.isLogin) {
+    router.push({ name: 'board' });
+  }
 };
 </script>
 

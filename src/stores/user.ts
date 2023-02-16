@@ -21,7 +21,11 @@ export const useUserStore = defineStore({
     async login(input: LoginInput) {
       this.loading = true;
 
-      const user = await userApi.login(input);
+      const { accessToken, refreshToken } = await userApi.login(input);
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+
+      const user = await userApi.whoami();
       // this.errors = errorsHandler(err.message);
 
       this.currentUser = user;

@@ -1,4 +1,4 @@
-export interface LoginOutput {
+export interface WhoIAmOutput {
   id: number;
   firstName: string;
   lastName: string;
@@ -8,7 +8,17 @@ export interface LoginOutput {
   isVerified: boolean;
 }
 
+export interface LoginOutput {
+  accessToken: string;
+  refreshToken: string;
+}
+
 export interface SendRegisterEmailOutput {
   success: true;
   message: 'Verification email sent successfully';
+}
+
+export interface RegisterOutput {
+  accessToken: string;
+  refreshToken: string;
 }
