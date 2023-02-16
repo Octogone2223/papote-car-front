@@ -50,9 +50,12 @@ const routes = [
     name: 'user-validation',
     beforeEnter: async (to: any, _from: any, next: (route: string) => void) => {
       const { token } = to.query;
-      await userApi.register(token);
+      const { accessToken, refreshToken } = await userApi.register(token);
 
-      next('/se-connecter');
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+
+      next('/');
     },
     // INVISIBLE COMPONENT BECAUSE WE WAIT & REDIRECT TO LOGIN
     component: () => ({ template: '<div>Validation en cours...</div>' }),
@@ -79,6 +82,12 @@ router.beforeEach(async (to, _from, next) => {
     await useUserStore()
       .whoAmI()
       .catch(() => {});
+
+    const isNowLoggedIn = useUserStore().isLogin;
+    if (isNowLoggedIn) {
+      next();
+      return;
+    }
   }
 
   if (authRequired && !loggedIn) {
