@@ -5,7 +5,9 @@
       <div v-if="currentStep === 1">
         <h1>D'où partez vous ?</h1>
         <div>
-          <GMapAutocomplete />
+          <GMapAutocomplete
+            @item-select="(v) => pushToTraject('startingPoint', v)"
+          />
         </div>
       </div>
 
@@ -13,7 +15,9 @@
       <div v-else-if="currentStep === 2">
         <h1>Où allez vous ?</h1>
         <div>
-          <GMapAutocomplete />
+          <GMapAutocomplete
+            @item-select="(v) => pushToTraject('endingPoint', v)"
+          />
         </div>
       </div>
 
@@ -38,7 +42,11 @@
           <h1>Ajouter une étape</h1>
 
           <div>
-            <GMapAutocomplete />
+            <GMapAutocomplete
+              @item-select="
+                (v) => pushToTraject('steps', [...traject.steps, v])
+              "
+            />
           </div>
 
           <Button
@@ -53,9 +61,18 @@
       <div v-else-if="currentStep === 4">
         <h1>Récapitulatif de votre trajet</h1>
         <div>
-          <h2>Etape 1</h2>
-          <p>Adresse de départ</p>
-          <p>Adresse d'arrivée</p>
+          <p>Départ : {{ traject.startingPoint!.label }}</p>
+          <p>Arrivée : {{ traject.endingPoint!.label }}</p>
+          <p>Etapes : {{ traject.steps.length }}</p>
+
+          <div v-if="traject.steps.length > 0">
+            <p>Etapes :</p>
+            <ul>
+              <li v-for="step in traject.steps" :key="step.label">
+                {{ step.label }}
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
 
@@ -64,11 +81,19 @@
         <h1>Configurer votre trajet</h1>
         <div class="col">
           <p>Date de départ</p>
-          <Calendar :showTime="true" touch-u-i />
+          <Calendar :showTime="true" touch-u-i v-model="traject.date" />
         </div>
         <div class="col">
           <p>Nombre de passagers</p>
-          <InputNumber />
+          <InputNumber v-model="traject.nbPassengers" />
+        </div>
+        <div class="col">
+          <p>Fumeurs autorisés</p>
+          <Checkbox v-model="traject.smoker" />
+        </div>
+        <div class="col">
+          <p>Animaux autorisés</p>
+          <Checkbox v-model="traject.petAccepted" />
         </div>
       </div>
 
@@ -92,17 +117,69 @@
       v-show="!isShowingNewTrajectStep"
       :steps="7"
       @change-step="(step) => changeStep(step)"
+      @complete="() => handleAddTravel()"
       class="stepper"
+      :handler="handleValidation"
     />
   </div>
 </template>
 
 <script setup lang="ts">
+import { travelApi } from '@/api';
 import { UseTransitionOnStep } from '@/composables';
 const { transitionPxInit, transitionPx, currentStep, changeStep } =
   UseTransitionOnStep;
 
 const isShowingNewTrajectStep = ref(false);
+
+interface suggestion {
+  label: string;
+  center: number[];
+}
+
+const traject = ref({
+  startingPoint: null as suggestion | null,
+  endingPoint: null as suggestion | null,
+  steps: [] as suggestion[],
+  nbPassengers: null as number | null,
+  date: '',
+  smoker: false,
+  petAccepted: false,
+});
+
+const pushToTraject = (
+  key: 'startingPoint' | 'endingPoint' | 'steps',
+  value: any
+) => {
+  traject.value[key] = value;
+};
+
+const handleValidation = () => {
+  if (currentStep.value === 1 && traject.value.startingPoint === null)
+    return false;
+  if (currentStep.value === 2 && traject.value.endingPoint === null)
+    return false;
+  if (
+    currentStep.value === 5 &&
+    traject.value.nbPassengers === null &&
+    traject.value.date === ''
+  )
+    return false;
+
+  return true;
+};
+
+const handleAddTravel = async () => {
+  //TODO : when the API will be ready, update this part
+  const body = {
+    smoker: false,
+    petAccepted: false,
+    car: 'fez',
+    steps: traject.value.steps,
+  } as any;
+
+  const travel = await travelApi.postTravel(traject.value);
+};
 </script>
 
 <style scoped lang="scss">
