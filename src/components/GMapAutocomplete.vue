@@ -16,7 +16,9 @@
       }"
     />
 
-    <ErrorsHandler :errors="v$.search.$errors" />
+    <div style="margin: 0 0 1rem 0">
+      <ErrorsHandler :errors="v$.search.$errors" />
+    </div>
 
     <MapboxMap
       v-if="showMap === true"
@@ -68,10 +70,6 @@ const onSelect = async (suggestion: Ref<suggestion>) => {
   mapCoords.value = suggestion.value.center;
   canCallApi.value = false;
 
-  const isFormValid = await v$.value.$validate();
-
-  if (!isFormValid) return;
-
   emits('item-select', suggestion.value);
 };
 
@@ -85,7 +83,20 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  forceValidation: {
+    type: Boolean,
+    default: false,
+  },
 });
+
+watch(
+  () => props.forceValidation,
+  async (forceValidation) => {
+    if (forceValidation) {
+      await v$.value.$validate();
+    }
+  }
+);
 
 const getSuggestions = async () => {
   if (!canCallApi.value) return;

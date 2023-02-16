@@ -6,6 +6,7 @@
         <h1>D'où partez vous ?</h1>
         <div>
           <GMapAutocomplete
+            :force-validation="forceValidation"
             @item-select="(v) => pushToTraject('startingPoint', v)"
           />
         </div>
@@ -16,6 +17,7 @@
         <h1>Où allez vous ?</h1>
         <div>
           <GMapAutocomplete
+            :force-validation="forceValidation"
             @item-select="(v) => pushToTraject('endingPoint', v)"
           />
         </div>
@@ -43,6 +45,7 @@
 
           <div>
             <GMapAutocomplete
+              :force-validation="forceValidation"
               @item-select="
                 (v) => pushToTraject('steps', [...traject.steps, v])
               "
@@ -89,11 +92,11 @@
         </div>
         <div class="col">
           <p>Fumeurs autorisés</p>
-          <Checkbox v-model="traject.smoker" />
+          <Checkbox v-model="traject.smoker" :binary="true" />
         </div>
         <div class="col">
           <p>Animaux autorisés</p>
-          <Checkbox v-model="traject.petAccepted" />
+          <Checkbox v-model="traject.petAccepted" :binary="true" />
         </div>
       </div>
 
@@ -154,18 +157,27 @@ const pushToTraject = (
   traject.value[key] = value;
 };
 
+const forceValidation = ref(false);
+
 const handleValidation = () => {
-  if (currentStep.value === 1 && traject.value.startingPoint === null)
+  if (currentStep.value === 1 && traject.value.startingPoint === null) {
+    forceValidation.value = true;
     return false;
-  if (currentStep.value === 2 && traject.value.endingPoint === null)
+  }
+  if (currentStep.value === 2 && traject.value.endingPoint === null) {
+    forceValidation.value = true;
     return false;
+  }
   if (
     currentStep.value === 5 &&
     traject.value.nbPassengers === null &&
     traject.value.date === ''
-  )
+  ) {
+    forceValidation.value = true;
     return false;
+  }
 
+  forceValidation.value = false;
   return true;
 };
 
