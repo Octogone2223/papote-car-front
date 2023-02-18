@@ -41,10 +41,20 @@
             <br />1 passager
           </p>
         </div>
-        <label for="start">Fumeur</label>
-        <Checkbox v-model="traject.smoker" />
-        <label for="start">Animal accepté</label>
-        <Checkbox v-model="traject.petAccepted" />
+        <table class="filter">
+          <th>Filtrer :</th>
+          <tr>
+            <td>
+              <label for="start">Fumeur</label>
+              <Checkbox v-model="traject.smoker" :binary="true" />
+            </td>
+            <td>
+              <label for="start">Animal accepté</label>
+              <Checkbox v-model="traject.petAccepted" :binary="true" />
+            </td>
+          </tr>
+        </table>
+        
         <div>
           <Card>
             <template #content>
@@ -166,13 +176,6 @@ const traject = ref({
   petAccepted: false,
 });
 
-const pushToTraject = (
-  key: 'startingPoint' | 'endingPoint',
-  value: any
-) => {
-  traject.value[key] = value;
-};
-
 const forceValidation = ref(false);
 
 const handleValidation = () => {
@@ -184,11 +187,7 @@ const handleValidation = () => {
     forceValidation.value = true;
     return false;
   }
-  if (currentStep.value === 2) {
-    console.log("Value:" + traject.value.startingPoint)
-  }
   
-
   forceValidation.value = false;
   return true;
 };
@@ -272,4 +271,21 @@ const handleSearchTravel = async () => {
   padding-left: 10px;
   padding-right: 10px;
 }
+
+.filter{
+  display:flex;
+  padding:10px;
+  align-items: center;
+  justify-content: center;
+  width:100%;
+
+  td{
+    >label{
+      padding-right:4px;
+      padding-left:5px;
+    }
+    
+  }
+}
+
 </style>
