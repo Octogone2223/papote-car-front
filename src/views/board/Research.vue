@@ -5,29 +5,27 @@
         <form>
           <label for="start">Départ:</label>
           <div>
-            <GMapAutocomplete :show-map="false" />
+            <GMapAutocomplete 
+            :show-map="false"
+            :force-validation="forceValidation"
+            v-model="traject.startingPoint" />
           </div>
           <label for="destination">Destination:</label>
           <div>
-            <GMapAutocomplete :show-map="false" />
+            <GMapAutocomplete 
+            :show-map="false"
+            :force-validation="forceValidation"
+            v-model="traject.endingPoint"
+             />
           </div>
-
-          <!-- <InputText
-            id="destination"
-            v-model="destination"
-            aria-describedby="destination"
-            @keydown.enter=""
-            autocomplete="destination"
-          /> -->
-
           <div>
             <label for="date">Date:</label>
-            <Calendar v-model="date" :showTime="true" id="date" />
+            <Calendar v-model="traject.date" :showTime="true" id="date" />
           </div>
           <div>
             <label for="passengers">Nombre de voyageurs:</label>
             <InputNumber
-              v-model="passengers"
+              v-model="traject.nbPassengers"
               type="number"
               id="passengers"
               name="passengers"
@@ -44,9 +42,9 @@
           </p>
         </div>
         <label for="start">Fumeur</label>
-        <Checkbox v-model="smoker" />
+        <Checkbox v-model="traject.smoker" />
         <label for="start">Animal accepté</label>
-        <Checkbox v-model="petAccepted" />
+        <Checkbox v-model="traject.petAccepted" />
         <div>
           <Card>
             <template #content>
@@ -118,6 +116,7 @@
       :steps="5"
       @change-step="(step) => changeStep(step)"
       class="stepper"
+      :handler="handleValidation"
     />
   </div>
 
@@ -144,11 +143,57 @@
 </template>
 
 <script setup lang="ts">
-import { UseTransitionOnStep } from "@/composables";
+
+import { travelApi } from '@/api';
+import { UseTransitionOnStep } from '@/composables';
 const { transitionPxInit, transitionPx, currentStep, changeStep } =
   UseTransitionOnStep;
 
-const events = [
+const isShowingNewTrajectStep = ref(false);
+
+interface suggestion {
+  label: string;
+  center: number[];
+}
+
+const traject = ref({
+  startingPoint: null as suggestion | null,
+  endingPoint: null as suggestion | null,
+  steps: [] as suggestion[],
+  nbPassengers: null as number | null,
+  date: '',
+  smoker: false,
+  petAccepted: false,
+});
+
+const pushToTraject = (
+  key: 'startingPoint' | 'endingPoint',
+  value: any
+) => {
+  traject.value[key] = value;
+};
+
+const forceValidation = ref(false);
+
+const handleValidation = () => {
+  if (currentStep.value === 1 &&
+    traject.value.startingPoint === null &&
+    traject.value.endingPoint === null &&
+    traject.value.date === '' &&
+    traject.value.nbPassengers === null) {
+    forceValidation.value = true;
+    return false;
+  }
+  if (currentStep.value === 2) {
+    console.log("Value:" + traject.value.startingPoint)
+  }
+  
+
+  forceValidation.value = false;
+  return true;
+};
+
+var events = [
   {
     status: "Nantes",
     date: "15/10/2020 10:30",
@@ -175,6 +220,20 @@ const events = [
     color: "#607D8B",
   },
 ];
+
+
+const handleSearchTravel = async () => {
+  //TODO : when the API will be ready, update this part
+  const body = {
+    smoker: false,
+    petAccepted: false,
+    startingPoint: '',
+    endingPoint:''
+  } as any;
+  //const travel = await travelApi.getTravels(traject.value);
+};
+
+
 </script>
 
 <style scoped lang="scss">

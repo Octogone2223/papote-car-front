@@ -1,15 +1,8 @@
-export interface PostTravelInput {
+export interface PostTravelOutput {
   smoker: boolean;
   petAccepted: boolean;
   car: string;
   steps: Step[];
-}
-
-export interface GetTravelInput {
-  smoker: boolean;
-  petAccepted: boolean;
-  startingPoint: string;
-  endingPoint: string;
 }
 
 interface Step {
