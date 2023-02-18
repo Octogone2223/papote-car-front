@@ -8,7 +8,7 @@
           class="avatar"
           style="background: var(--primary-color); color: white"
         />
-        <p>JOHN DOE</p>
+        <p>{{ currentUser.firstName }} {{ currentUser.lastName }}</p>
       </div>
     </div>
 
@@ -25,26 +25,34 @@
         <div>
           <div class="col">
             <p>Description</p>
-            <InputText type="text" />
+            <InputText type="text" v-model="details.description" />
           </div>
           <div class="col">
-            <p>Pseudonyme</p>
-            <InputText type="text" />
+            <p>Nom</p>
+            <InputText type="text" v-model="details.lastName" />
+          </div>
+          <div class="col">
+            <p>Prénom</p>
+            <InputText type="text" v-model="details.firstName" />
           </div>
           <div class="col">
             <p>Email</p>
-            <InputText type="text" />
+            <InputText type="text" v-model="details.email" />
           </div>
           <div class="col">
             <p>Téléphone</p>
-            <InputText type="text" />
+            <InputText type="text" v-model="details.phone" />
           </div>
-          <div class="col" style="padding-bottom: 1rem">
+          <div class="col">
             <p>Véhicule</p>
             <Button
+              class="p-button-outlined"
               :label="!car ? 'Ajouter' : 'Modifier'"
               @click="isShowingEditVehiculeModal = true"
             />
+          </div>
+          <div class="col">
+            <Button label="Appliquer" style="margin: 1rem 0" />
           </div>
         </div>
       </div>
@@ -76,19 +84,19 @@
     >
       <div class="col">
         <p>Marque</p>
-        <InputText type="text" />
+        <InputText type="text" v-model="carDetails.brand" />
       </div>
       <div class="col">
         <p>Modèle</p>
-        <InputText type="text" />
+        <InputText type="text" v-model="carDetails.model" />
       </div>
       <div class="col">
         <p>Places</p>
-        <InputText type="text" />
+        <InputText type="text" v-model="carDetails.places" />
       </div>
       <div class="col">
         <p>Couleur</p>
-        <InputText type="text" />
+        <InputText type="text" v-model="carDetails.color" />
       </div>
       <template #footer>
         <Button
@@ -110,15 +118,58 @@
 </template>
 
 <script setup lang="ts">
+import { useUserStore } from '@/stores';
+import { User } from '@/types';
+import { Ref } from '@vue/reactivity';
+import { useVuelidate } from '@vuelidate/core';
+import {
+  required as requiredR,
+  email as emailR,
+  minLength as minLengthR,
+  helpers,
+} from '@vuelidate/validators';
+
+const { currentUser } = storeToRefs(useUserStore()) as {
+  currentUser: Ref<User>;
+};
+
 const items = [
-  { label: "Informations", tab: "details" },
-  { label: "Mot de passe", tab: "password" },
+  { label: 'Informations', tab: 'details' },
+  { label: 'Mot de passe', tab: 'password' },
 ];
 
-const currentTab = ref<"password" | "details">("details");
+const currentTab = ref<'password' | 'details'>('details');
 
 const car = ref(true);
 const isShowingEditVehiculeModal = ref(false);
+
+const details = { ...currentUser.value };
+const carDetails = {
+  brand: '',
+  model: '',
+  places: '',
+  color: '',
+};
+
+const rules = {
+  user: {
+    email: {
+      required: helpers.withMessage(`Un email est requis`, requiredR),
+      email: helpers.withMessage(`L'email n'est pas valide`, emailR),
+    },
+    password: {
+      required: helpers.withMessage(`Un mot de passe est requis`, requiredR),
+    },
+  },
+};
+
+const v$ = useVuelidate(
+  rules,
+  {},
+  {
+    $autoDirty: true,
+  }
+);
 </script>
 
 <style scoped lang="scss">
