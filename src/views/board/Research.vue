@@ -2,6 +2,7 @@
   <div class="wrapper">
     <transition name="slide-fade" mode="out-in" class="transition-wrapper">
       <div v-if="currentStep === 1">
+        <h1>Que cherchez vous ?</h1>
         <form>
           <label for="start">Départ:</label>
           <div>
@@ -36,6 +37,11 @@
 
       <div v-else-if="currentStep === 2">
         <div class="profil-view">
+          <Button
+            class="p-button-text"
+            @click="$router.go(-1)"
+            icon="pi pi-arrow-left"
+          />
           <p>
             Nantes, France <i class="pi pi-arrow-right"></i> Paris, France
             <br />1 passager
@@ -72,7 +78,7 @@
       </div>
 
       <div v-else-if="currentStep === 3">
-        <h2>00/00/000 00:00</h2>
+        <h2>00/00/0000 00:00</h2>
         <br />
         <Timeline :value="events">
           <template #opposite="slotProps">
@@ -129,33 +135,13 @@
       :handler="handleValidation"
     />
   </div>
-
-  <!-- <div v-if="trips.length">
-        <h2>Résultats de la recherche</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Destination</th>
-              <th>Date</th>
-              <th>Nombre de voyageurs</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="trip in trips" :key="trip.id">
-              <td>{{ trip.destination }}</td>
-              <td>{{ trip.date }}</td>
-              <td>{{ trip.passengers }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div> -->
 </template>
 
 <script setup lang="ts">
 
 import { travelApi } from '@/api';
 import { UseTransitionOnStep } from '@/composables';
+import { stringify } from 'querystring';
 const { transitionPxInit, transitionPx, currentStep, changeStep } =
   UseTransitionOnStep;
 
@@ -165,32 +151,6 @@ interface suggestion {
   label: string;
   center: number[];
 }
-
-const traject = ref({
-  startingPoint: null as suggestion | null,
-  endingPoint: null as suggestion | null,
-  steps: [] as suggestion[],
-  nbPassengers: null as number | null,
-  date: '',
-  smoker: false,
-  petAccepted: false,
-});
-
-const forceValidation = ref(false);
-
-const handleValidation = () => {
-  if (currentStep.value === 1 &&
-    traject.value.startingPoint === null &&
-    traject.value.endingPoint === null &&
-    traject.value.date === '' &&
-    traject.value.nbPassengers === null) {
-    forceValidation.value = true;
-    return false;
-  }
-  
-  forceValidation.value = false;
-  return true;
-};
 
 var events = [
   {
@@ -220,6 +180,37 @@ var events = [
   },
 ];
 
+const today = new Date();
+const date = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
+const time = today.getHours() + ":" + today.getMinutes();
+
+const dateTime = date + ' ' + time;
+
+const traject = ref({
+  startingPoint: null as suggestion | null,
+  endingPoint: null as suggestion | null,
+  nbPassengers: 1 as number,
+  date: dateTime as string,
+  smoker: true as boolean,
+  petAccepted: true as boolean,
+});
+
+const forceValidation = ref(false);
+
+const handleValidation = () => {
+  if (currentStep.value === 1 &&
+    traject.value.startingPoint === null &&
+    traject.value.endingPoint === null &&
+    traject.value.date === '' &&
+    traject.value.nbPassengers === null) {
+    forceValidation.value = true;
+    return false;
+  }
+  
+  forceValidation.value = false;
+  return true;
+};
+
 
 const handleSearchTravel = async () => {
   //TODO : when the API will be ready, update this part
@@ -231,7 +222,6 @@ const handleSearchTravel = async () => {
   } as any;
   //const travel = await travelApi.getTravels(traject.value);
 };
-
 
 </script>
 
@@ -268,8 +258,7 @@ const handleSearchTravel = async () => {
   position: relative;
   background: var(--surface-100);
   border: var(--primary-color) dashed 1px;
-  padding-left: 10px;
-  padding-right: 10px;
+  display: flex;
 }
 
 .filter{
