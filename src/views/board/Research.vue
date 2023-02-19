@@ -4,17 +4,19 @@
       <div v-if="currentStep === 1">
         <h1>Que cherchez vous ?</h1>
         <form>
-          <label for="start">Départ:</label>
+          
           <div>
-            <GMapAutocomplete 
-            :show-map="false"
-            :force-validation="forceValidation"
-            v-model="traject.startingPoint" />
+            <label for="start">Départ:</label>
+            <div>
+              <GMapAutocomplete 
+              :force-validation="forceValidation"
+              v-model="traject.startingPoint" />
+            </div>
           </div>
+          
           <label for="destination">Destination:</label>
           <div>
-            <GMapAutocomplete 
-            :show-map="false"
+            <GMapAutocomplete
             :force-validation="forceValidation"
             v-model="traject.endingPoint"
              />
@@ -273,7 +275,6 @@ const handleSearchTravel = async () => {
       padding-right:4px;
       padding-left:5px;
     }
-    
   }
 }
 
