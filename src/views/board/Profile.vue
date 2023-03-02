@@ -25,23 +25,63 @@
         <div>
           <div class="col">
             <p>Description</p>
-            <InputText type="text" v-model="details.description" />
+            <InputText
+              type="text"
+              v-model="details.description"
+              :class="{
+                'p-invalid': v$.user.description.$error,
+              }"
+              @keydown.enter="() => handleUpdateCar"
+            />
+            <ErrorsHandler :errors="v$.user.description.$errors" />
           </div>
           <div class="col">
             <p>Nom</p>
-            <InputText type="text" v-model="details.lastName" />
+            <InputText
+              type="text"
+              v-model="details.lastName"
+              :class="{
+                'p-invalid': v$.user.lastName.$error,
+              }"
+              @keydown.enter="() => handleUpdateCar"
+            />
+            <ErrorsHandler :errors="v$.user.lastName.$errors" />
           </div>
           <div class="col">
             <p>Prénom</p>
-            <InputText type="text" v-model="details.firstName" />
+            <InputText
+              type="text"
+              v-model="details.firstName"
+              :class="{
+                'p-invalid': v$.user.firstName.$error,
+              }"
+              @keydown.enter="() => handleUpdateCar"
+            />
+            <ErrorsHandler :errors="v$.user.firstName.$errors" />
           </div>
           <div class="col">
             <p>Email</p>
-            <InputText type="text" v-model="details.email" />
+            <InputText
+              type="text"
+              v-model="details.email"
+              :class="{
+                'p-invalid': v$.user.email.$error,
+              }"
+              @keydown.enter="() => handleUpdateCar"
+            />
+            <ErrorsHandler :errors="v$.user.email.$errors" />
           </div>
           <div class="col">
             <p>Téléphone</p>
-            <InputText type="text" v-model="details.phone" />
+            <InputText
+              type="text"
+              v-model="details.phone"
+              :class="{
+                'p-invalid': v$.user.phone.$error,
+              }"
+              @keydown.enter="() => handleUpdateCar"
+            />
+            <ErrorsHandler :errors="v$.user.phone.$errors" />
           </div>
           <div class="col">
             <p>Véhicule</p>
@@ -52,7 +92,11 @@
             />
           </div>
           <div class="col">
-            <Button label="Appliquer" style="margin: 1rem 0" />
+            <Button
+              label="Appliquer"
+              style="margin: 1rem 0"
+              @click="handleUpdateUser"
+            />
           </div>
         </div>
       </div>
@@ -109,7 +153,7 @@
         <Button
           :label="car ? 'Modifier' : 'Ajouter'"
           icon="pi pi-check"
-          @click="() => ({})"
+          @click="handleUpdateCar"
           autofocus
         />
       </template>
@@ -157,19 +201,68 @@ const rules = {
       required: helpers.withMessage(`Un email est requis`, requiredR),
       email: helpers.withMessage(`L'email n'est pas valide`, emailR),
     },
-    password: {
-      required: helpers.withMessage(`Un mot de passe est requis`, requiredR),
+    firstName: {
+      required: helpers.withMessage(`Un prénom est requis`, requiredR),
+    },
+    lastName: {
+      required: helpers.withMessage(`Un nom est requis`, requiredR),
+    },
+    phone: {
+      required: helpers.withMessage(
+        `Un numéro de téléphone est requis`,
+        requiredR
+      ),
+      minLength: helpers.withMessage(
+        `Le numéro de téléphone doit faire au moins 10 caractères`,
+        minLengthR(10)
+      ),
+    },
+  },
+  car: {
+    brand: {
+      required: helpers.withMessage(`Une marque est requise`, requiredR),
+    },
+    model: {
+      required: helpers.withMessage(`Un modèle est requis`, requiredR),
+    },
+    places: {
+      required: helpers.withMessage(
+        `Un nombre de places est requis`,
+        requiredR
+      ),
+    },
+    color: {
+      required: helpers.withMessage(`Une couleur est requise`, requiredR),
     },
   },
 };
 
 const v$ = useVuelidate(
   rules,
-  {},
+  {
+    user: details,
+    car: carDetails,
+  },
   {
     $autoDirty: true,
   }
 );
+
+const handleUpdateUser = async () => {
+  const isFormValid = await v$.value.user.$validate();
+
+  if (!isFormValid) return;
+
+  console.log('update');
+};
+
+const handleUpdateCar = async () => {
+  const isFormValid = await v$.value.car.$validate();
+
+  if (!isFormValid) return;
+
+  console.log('update');
+};
 </script>
 
 <style scoped lang="scss">
