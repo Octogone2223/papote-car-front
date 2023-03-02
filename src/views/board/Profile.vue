@@ -84,10 +84,10 @@
             <ErrorsHandler :errors="v$.user.phone.$errors" />
           </div>
           <div class="col">
-            <p>Véhicule</p>
+            <p>Véhicules</p>
             <Button
               class="p-button-outlined"
-              :label="!car ? 'Ajouter' : 'Modifier'"
+              label="Voir mes méhicules"
               @click="isShowingEditVehiculeModal = true"
             />
           </div>
@@ -122,38 +122,93 @@
     <Dialog
       :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
       :style="{ width: '50vw' }"
-      :header="car ? 'Modifier un véhicule' : 'Ajouter un véhicule'"
+      header="Mes véhicules"
       v-model:visible="isShowingEditVehiculeModal"
       :modal="true"
     >
-      <div class="col">
-        <p>Marque</p>
-        <InputText type="text" v-model="carDetails.brand" />
+      <DataTable
+        :value="cars"
+        class="p-datatable-sm"
+        responsiveLayout="scroll"
+        style="width: 100%"
+      >
+        <Column field="model" header="Modèle"></Column>
+        <Column field="brand" header="Marque"></Column>
+        <Column field="place" header="Places"></Column>
+        <Column field="color" header="Couleur"></Column>
+
+        <template #empty>Aucun véhicule, pensez à en ajouter ! </template>
+      </DataTable>
+
+      <div v-if="isShowingAddVehiculeContent">
+        <div class="col">
+          <p>Marque</p>
+          <InputText
+            type="text"
+            v-model="carDetails.brand"
+            :class="{
+              'p-invalid': v$.car.brand.$error,
+            }"
+            @keydown.enter="() => handleUpdateCar"
+          />
+          <ErrorsHandler :errors="v$.car.brand.$errors" />
+        </div>
+        <div class="col">
+          <p>Modèle</p>
+          <InputText
+            type="text"
+            v-model="carDetails.model"
+            :class="{
+              'p-invalid': v$.car.model.$error,
+            }"
+            @keydown.enter="() => handleUpdateCar"
+          />
+          <ErrorsHandler :errors="v$.car.model.$errors" />
+        </div>
+        <div class="col">
+          <p>Places</p>
+          <InputNumber
+            v-model="carDetails.place"
+            :class="{
+              'p-invalid': v$.car.place.$error,
+            }"
+            @keydown.enter="() => handleUpdateCar"
+          />
+          <ErrorsHandler :errors="v$.car.place.$errors" />
+        </div>
+        <div class="col">
+          <p>Couleur</p>
+          <InputText
+            type="text"
+            v-model="carDetails.color"
+            :class="{
+              'p-invalid': v$.car.color.$error,
+            }"
+            @keydown.enter="() => handleUpdateCar"
+          />
+          <ErrorsHandler :errors="v$.car.color.$errors" />
+        </div>
+
+        <Button
+          label="Ajouter"
+          style="margin-top: 1rem; width: 100%"
+          class="p-button-outlined"
+          @click="handleUpdateCar"
+        />
       </div>
-      <div class="col">
-        <p>Modèle</p>
-        <InputText type="text" v-model="carDetails.model" />
-      </div>
-      <div class="col">
-        <p>Places</p>
-        <InputText type="text" v-model="carDetails.places" />
-      </div>
-      <div class="col">
-        <p>Couleur</p>
-        <InputText type="text" v-model="carDetails.color" />
-      </div>
+
       <template #footer>
         <Button
-          label="Annuler"
-          icon="pi pi-times"
-          @click="isShowingEditVehiculeModal = false"
+          label="Formulaire d'ajout"
           class="p-button-text"
-          style="margin-top: 24px"
+          style="margin-top: 1rem"
+          @click="isShowingAddVehiculeContent = !isShowingAddVehiculeContent"
         />
+
         <Button
-          :label="car ? 'Modifier' : 'Ajouter'"
+          label="OK"
           icon="pi pi-check"
-          @click="handleUpdateCar"
+          @click="isShowingEditVehiculeModal = false"
           autofocus
         />
       </template>
@@ -162,7 +217,7 @@
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from '@/stores';
+import { useCarStore, useUserStore } from '@/stores';
 import { User } from '@/types';
 import { Ref } from '@vue/reactivity';
 import { useVuelidate } from '@vuelidate/core';
@@ -184,19 +239,22 @@ const items = [
 
 const currentTab = ref<'password' | 'details'>('details');
 
-const car = ref(true);
 const isShowingEditVehiculeModal = ref(false);
+const isShowingAddVehiculeContent = ref(false);
 
-const details = { ...currentUser.value };
-const carDetails = {
+const { cars } = storeToRefs(useCarStore());
+
+const details = ref({ ...currentUser.value });
+const carDetails = ref({
   brand: '',
   model: '',
-  places: '',
+  place: 3,
   color: '',
-};
+});
 
 const rules = {
   user: {
+    description: {},
     email: {
       required: helpers.withMessage(`Un email est requis`, requiredR),
       email: helpers.withMessage(`L'email n'est pas valide`, emailR),
@@ -225,7 +283,7 @@ const rules = {
     model: {
       required: helpers.withMessage(`Un modèle est requis`, requiredR),
     },
-    places: {
+    place: {
       required: helpers.withMessage(
         `Un nombre de places est requis`,
         requiredR
@@ -240,20 +298,20 @@ const rules = {
 const v$ = useVuelidate(
   rules,
   {
-    user: details,
-    car: carDetails,
+    user: details.value,
+    car: carDetails.value,
   },
   {
     $autoDirty: true,
   }
 );
 
+const carsStore = useCarStore();
+
 const handleUpdateUser = async () => {
   const isFormValid = await v$.value.user.$validate();
 
   if (!isFormValid) return;
-
-  console.log('update');
 };
 
 const handleUpdateCar = async () => {
@@ -261,7 +319,7 @@ const handleUpdateCar = async () => {
 
   if (!isFormValid) return;
 
-  console.log('update');
+  await carsStore.addCar(carDetails.value);
 };
 </script>
 

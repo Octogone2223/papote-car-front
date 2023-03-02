@@ -1,8 +1,9 @@
+import { PostUserCarInput } from '@/types/inputs';
 import { kyApi } from '~/config-api';
 
 const ressource = 'cars';
 
-const postUserCar = async (json: any): Promise<any> => {
+const postUserCar = async (json: PostUserCarInput): Promise<any> => {
   const response = await kyApi.post(`${ressource}`, {
     json,
   });

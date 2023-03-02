@@ -1,10 +1,12 @@
-import { Car } from './../types/Car';
+import { carApi } from '@/api';
+import { Car } from '@/types';
+import { PostUserCarInput } from '@/types/inputs';
 
-export const useUserStore = defineStore({
+export const useCarStore = defineStore({
   id: 'carStore',
 
   state: () => ({
-    cars: null as Car | null,
+    cars: [] as Car[],
     loading: false,
   }),
 
@@ -17,8 +19,12 @@ export const useUserStore = defineStore({
       this.loading = false;
     },
 
-    async addCar() {
+    async addCar(input: PostUserCarInput) {
       this.loading = true;
+
+      const car = await carApi.postUserCar(input);
+
+      this.cars = [...this.cars, car];
 
       this.loading = false;
     },
