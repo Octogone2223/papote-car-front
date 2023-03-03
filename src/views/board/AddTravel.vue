@@ -128,8 +128,8 @@
 </template>
 
 <script setup lang="ts">
-import { travelApi } from '@/api';
-import { UseTransitionOnStep } from '@/composables';
+import { travelApi } from "@/api";
+import { UseTransitionOnStep } from "@/composables";
 const { transitionPxInit, transitionPx, currentStep, changeStep } =
   UseTransitionOnStep;
 
@@ -145,13 +145,13 @@ const traject = ref({
   endingPoint: null as suggestion | null,
   steps: [] as suggestion[],
   nbPassengers: null as number | null,
-  date: '',
+  date: "",
   smoker: false,
   petAccepted: false,
 });
 
 const pushToTraject = (
-  key: 'startingPoint' | 'endingPoint' | 'steps',
+  key: "startingPoint" | "endingPoint" | "steps",
   value: any
 ) => {
   traject.value[key] = value;
@@ -171,7 +171,7 @@ const handleValidation = () => {
   if (
     currentStep.value === 5 &&
     traject.value.nbPassengers === null &&
-    traject.value.date === ''
+    traject.value.date === ""
   ) {
     forceValidation.value = true;
     return false;
@@ -186,7 +186,7 @@ const handleAddTravel = async () => {
   const body = {
     smoker: false,
     petAccepted: false,
-    car: 'fez',
+    car: "fez",
     steps: traject.value.steps,
   } as any;
 

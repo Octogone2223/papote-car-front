@@ -1,5 +1,5 @@
 <template>
-  <div class="gMapAutocomplete">
+  <div class="gMapAutocomplete" :class="{ mapVisible }">
     <AutoComplete
       type="text"
       v-model="search"
@@ -79,9 +79,19 @@ const onSelect = async (suggestion: Ref<suggestion>) => {
   emits('item-select', suggestion.value);
 };
 
-const toggleMap = () => {
-  mapVisible.value = !mapVisible.value;
-  console.log(mapVisible.value);
+const hasApiBeenCalled = ref(false);
+
+
+const toggleMap = async () => {
+  if (mapVisible.value) {
+    mapVisible.value = false;
+  } else {
+    if (!hasApiBeenCalled.value) {
+      await getSuggestions();
+      hasApiBeenCalled.value = true;
+    }
+    mapVisible.value = true;
+  }
 };
 
 interface suggestion {
@@ -127,59 +137,76 @@ const getSuggestions = async () => {
 </script>
 <style lang="scss">
 
-  .gMapAutocomplete{
-    display:flex;
-    .rightIcon{
-      width:45px;
-      margin: 1rem 0px 0px;
-      font-size: 1rem;
-      color: #495057;
-      background: #ffffff;
-      padding: 0.75rem 0.75rem;
-      border: 1px solid #ced4da;
-      border-top-right-radius: 6px;
-      border-bottom-right-radius: 6px;
-      cursor: pointer;
+  .gMapAutocomplete {
+  display: flex;
+  .rightIcon {
+    width: 45px;
+    margin: 1rem 0px 0px;
+    font-size: 1rem;
+    color: #495057;
+    background: #ffffff;
+    padding: 0.75rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    cursor: pointer;
 
-      i{
-        color: #14B8A6;
-      }
+    i {
+      color: #14B8A6;
     }
-    input{
-      border-top-right-radius: 0px;
-      border-bottom-right-radius: 0px;
-    }
+  }
+  input {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+  }
 
-    .active, .mapboxMap:hover {
+  .active,
+  .mapboxMap:hover {
     background-color: #ccc;
   }
 }
 
-  .slide-fade-enter-from {
-    height: 0;
-  }
+.slide-fade-enter-from {
+  height: 0;
+}
 
-  .slide-fade-enter-active,
-  .slide-fade-leave-active {
-    transition: all 0.4s ease;
-  }
+.slide-fade-enter-to,
+.slide-fade-leave-active {
+  height: 0;
+}
 
-  .slide-fade-leave-to {
-    height: 0;
-  }
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.4s ease;
+}
 
-  .slide-fade-enter-to {
-    height: 0px;
-  }
+.slide-fade-leave-to,
+.slide-fade-enter-active {
+  height: auto;
+}
 
-  .boxMap {
-    height: 400px;
-    transition: all 0.3s ease;
-    border: 1px solid #ced4da;
-    border-top: 0px;
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 6px;
-    border-top-left-radius: 0px;
-    border-bottom-left-radius: 6px;
-  }
+.boxMap {
+  height: 400px;
+  overflow: hidden;
+  transition: height 0.4s ease;
+}
+
+.slide-fade-enter-active .boxMap,
+.slide-fade-leave-active .boxMap {
+  height: auto;
+  transition: height 0.4s ease;
+}
+
+.rightIcon i {
+  color: #14B8A6;
+  transition: transform 0.3s ease;
+}
+
+.gMapAutocomplete.mapVisible .rightIcon i {
+  transform: rotate(90deg);
+}
+
+.gMapAutocomplete.mapVisible.false .rightIcon i {
+  transform: rotate(0deg);
+}
 </style>
