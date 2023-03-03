@@ -98,6 +98,28 @@
           <p>Animaux autorisés</p>
           <Checkbox v-model="traject.petAccepted" :binary="true" />
         </div>
+        <div class="col">
+          <p>Sélectionner votre voiture</p>
+          <Dropdown
+            v-model="selectedCar"
+            :options="cars"
+            placeholder="Sélectionner une voiture"
+          >
+            <template #value="slotProps">
+              <div class="p-dropdown-car-value">
+                <span>{{ displayCarLabel(slotProps.value) }}</span>
+              </div>
+            </template>
+            <template #option="slotProps">
+              <div class="p-dropdown-car-value">
+                <span>{{ displayCarLabel(slotProps.option) }}</span>
+              </div>
+            </template>
+            <template #empty>
+              <div>OUI</div>
+            </template>
+          </Dropdown>
+        </div>
       </div>
 
       <!-- ETAPE 6 -->
@@ -130,6 +152,9 @@
 <script setup lang="ts">
 import { travelApi } from '@/api';
 import { UseTransitionOnStep } from '@/composables';
+import { useCarStore } from '@/stores';
+import { Car } from '@/types';
+import { PostTravelInput } from '@/types/inputs';
 const { transitionPxInit, transitionPx, currentStep, changeStep } =
   UseTransitionOnStep;
 
@@ -182,15 +207,54 @@ const handleValidation = () => {
 };
 
 const handleAddTravel = async () => {
-  //TODO : when the API will be ready, update this part
-  const body = {
-    smoker: false,
-    petAccepted: false,
-    car: 'fez',
-    steps: [],
+  const body: PostTravelInput = {
+    smoker: traject.value.smoker,
+    petAccepted: traject.value.petAccepted,
+    car: String(selectedCar.value!.id),
+    steps: [
+      ...[
+        {
+          dateStart: traject.value.date,
+          place: traject.value.nbPassengers!,
+          townStart: traject.value.startingPoint!.label,
+          townEnd: traject.value.steps[0]?.label,
+        },
+      ],
+      ...traject.value.steps.map((step, i) => ({
+        dateStart: traject.value.date,
+        place: traject.value.nbPassengers!,
+        townStart: step.label,
+        townEnd:
+          traject.value.steps[i + 1]?.label || traject.value.endingPoint!.label,
+      })),
+      ...[
+        {
+          dateStart: traject.value.date,
+          place: traject.value.nbPassengers!,
+          townStart: traject.value.steps[traject.value.steps.length - 1].label,
+          townEnd: traject.value.endingPoint!.label,
+        },
+      ],
+    ],
   };
 
-  const travel = await travelApi.postTravel(traject.value as any);
+  const travel = await travelApi.postTravel(body);
+  console.log(
+    '🚀 ~ file: AddTravel.vue:221 ~ handleAddTravel ~ travel:',
+    travel
+  );
+};
+
+const carsStore = useCarStore();
+const cars = computed(() => carsStore.cars);
+const selectedCar = ref(null as Car | null);
+onMounted(async () => {
+  await carsStore.getCars();
+});
+
+const displayCarLabel = (car: Car) => {
+  if (!car) return '';
+  return `${car.model} - ${car.brand} (${car.color} - ${car.place} places)`;
 };
 </script>
 
