@@ -4,3 +4,7 @@ export interface PostUserCarInput {
   color: string;
   place: number;
 }
+
+export interface PatchUserCarInput extends PostUserCarInput {
+  id: number;
+}

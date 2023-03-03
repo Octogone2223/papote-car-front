@@ -1,4 +1,4 @@
-import { PostUserCarInput } from '@/types/inputs';
+import { PatchUserCarInput, PostUserCarInput } from '@/types/inputs';
 import { kyApi } from '~/config-api';
 
 const ressource = 'cars';
@@ -15,8 +15,13 @@ const getUserCars = async (): Promise<any> => {
   return response.json();
 };
 
-const updateUserCar = async (id: string): Promise<any> => {
-  const response = await kyApi.patch(`${ressource}/${id}`);
+const updateUserCar = async (
+  id: string,
+  json: Omit<PatchUserCarInput, 'id'>
+): Promise<any> => {
+  const response = await kyApi.patch(`${ressource}/${id}`, {
+    json,
+  });
   return response.json();
 };
 
