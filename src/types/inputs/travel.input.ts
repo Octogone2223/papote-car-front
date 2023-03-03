@@ -5,7 +5,7 @@ export interface PostTravelInput {
   steps: Step[];
 }
 
-interface Step {
+export interface Step {
   dateStart: string;
   townStart: string;
   townEnd: string;

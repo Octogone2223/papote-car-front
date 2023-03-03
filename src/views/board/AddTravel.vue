@@ -187,10 +187,10 @@ const handleAddTravel = async () => {
     smoker: false,
     petAccepted: false,
     car: 'fez',
-    steps: traject.value.steps,
-  } as any;
+    steps: [],
+  };
 
-  const travel = await travelApi.postTravel(traject.value);
+  const travel = await travelApi.postTravel(traject.value as any);
 };
 </script>
 

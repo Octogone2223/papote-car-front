@@ -8,7 +8,7 @@
           class="avatar"
           style="background: var(--primary-color); color: white"
         />
-        <p>JOHN DOE</p>
+        <p>{{ currentUser.firstName }} {{ currentUser.lastName }}</p>
       </div>
     </div>
 
@@ -25,25 +25,77 @@
         <div>
           <div class="col">
             <p>Description</p>
-            <InputText type="text" />
+            <InputText
+              type="text"
+              v-model="details.description"
+              :class="{
+                'p-invalid': v$.user.description.$error,
+              }"
+              @keydown.enter="() => handleUpdateUser"
+            />
+            <ErrorsHandler :errors="v$.user.description.$errors" />
           </div>
           <div class="col">
-            <p>Pseudonyme</p>
-            <InputText type="text" />
+            <p>Nom</p>
+            <InputText
+              type="text"
+              v-model="details.lastName"
+              :class="{
+                'p-invalid': v$.user.lastName.$error,
+              }"
+              @keydown.enter="() => handleUpdateUser"
+            />
+            <ErrorsHandler :errors="v$.user.lastName.$errors" />
+          </div>
+          <div class="col">
+            <p>Prénom</p>
+            <InputText
+              type="text"
+              v-model="details.firstName"
+              :class="{
+                'p-invalid': v$.user.firstName.$error,
+              }"
+              @keydown.enter="() => handleUpdateUser"
+            />
+            <ErrorsHandler :errors="v$.user.firstName.$errors" />
           </div>
           <div class="col">
             <p>Email</p>
-            <InputText type="text" />
+            <InputText
+              type="text"
+              v-model="details.email"
+              :class="{
+                'p-invalid': v$.user.email.$error,
+              }"
+              @keydown.enter="() => handleUpdateUser"
+            />
+            <ErrorsHandler :errors="v$.user.email.$errors" />
           </div>
           <div class="col">
             <p>Téléphone</p>
-            <InputText type="text" />
+            <InputText
+              type="text"
+              v-model="details.phone"
+              :class="{
+                'p-invalid': v$.user.phone.$error,
+              }"
+              @keydown.enter="() => handleUpdateUser"
+            />
+            <ErrorsHandler :errors="v$.user.phone.$errors" />
           </div>
-          <div class="col" style="padding-bottom: 1rem">
-            <p>Véhicule</p>
+          <div class="col">
+            <p>Véhicules</p>
             <Button
-              :label="!car ? 'Ajouter' : 'Modifier'"
-              @click="isShowingEditVehiculeModal = true"
+              class="p-button-outlined"
+              label="Voir mes méhicules"
+              @click="$router.push({ name: 'board-vehicles' })"
+            />
+          </div>
+          <div class="col">
+            <Button
+              label="Appliquer"
+              style="margin: 1rem 0"
+              @click="handleUpdateUser"
             />
           </div>
         </div>
@@ -66,59 +118,75 @@
         <Button label="Appliquer" style="margin-top: 1rem" />
       </div>
     </transition>
-
-    <Dialog
-      :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
-      :style="{ width: '50vw' }"
-      :header="car ? 'Modifier un véhicule' : 'Ajouter un véhicule'"
-      v-model:visible="isShowingEditVehiculeModal"
-      :modal="true"
-    >
-      <div class="col">
-        <p>Marque</p>
-        <InputText type="text" />
-      </div>
-      <div class="col">
-        <p>Modèle</p>
-        <InputText type="text" />
-      </div>
-      <div class="col">
-        <p>Places</p>
-        <InputText type="text" />
-      </div>
-      <div class="col">
-        <p>Couleur</p>
-        <InputText type="text" />
-      </div>
-      <template #footer>
-        <Button
-          label="Annuler"
-          icon="pi pi-times"
-          @click="isShowingEditVehiculeModal = false"
-          class="p-button-text"
-          style="margin-top: 24px"
-        />
-        <Button
-          :label="car ? 'Modifier' : 'Ajouter'"
-          icon="pi pi-check"
-          @click="() => ({})"
-          autofocus
-        />
-      </template>
-    </Dialog>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useUserStore } from '@/stores';
+import { User } from '@/types';
+import { Ref } from '@vue/reactivity';
+import { useVuelidate } from '@vuelidate/core';
+import {
+  required as requiredR,
+  email as emailR,
+  minLength as minLengthR,
+  helpers,
+} from '@vuelidate/validators';
+
+const { currentUser } = storeToRefs(useUserStore()) as {
+  currentUser: Ref<User>;
+};
+
 const items = [
-  { label: "Informations", tab: "details" },
-  { label: "Mot de passe", tab: "password" },
+  { label: 'Informations', tab: 'details' },
+  { label: 'Mot de passe', tab: 'password' },
 ];
 
-const currentTab = ref<"password" | "details">("details");
+const currentTab = ref<'password' | 'details'>('details');
 
-const car = ref(true);
-const isShowingEditVehiculeModal = ref(false);
+const details = ref({ ...currentUser.value });
+
+const rules = {
+  user: {
+    description: {},
+    email: {
+      required: helpers.withMessage(`Un email est requis`, requiredR),
+      email: helpers.withMessage(`L'email n'est pas valide`, emailR),
+    },
+    firstName: {
+      required: helpers.withMessage(`Un prénom est requis`, requiredR),
+    },
+    lastName: {
+      required: helpers.withMessage(`Un nom est requis`, requiredR),
+    },
+    phone: {
+      required: helpers.withMessage(
+        `Un numéro de téléphone est requis`,
+        requiredR
+      ),
+      minLength: helpers.withMessage(
+        `Le numéro de téléphone doit faire au moins 10 caractères`,
+        minLengthR(10)
+      ),
+    },
+  },
+};
+
+const v$ = useVuelidate(
+  rules,
+  {
+    user: details.value,
+  },
+  {
+    $autoDirty: true,
+  }
+);
+
+const handleUpdateUser = async () => {
+  const isFormValid = await v$.value.user.$validate();
+
+  if (!isFormValid) return;
+};
 </script>
 
 <style scoped lang="scss">

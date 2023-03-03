@@ -38,6 +38,11 @@ const routes = [
         name: 'board-profile',
         component: () => import('../views/board/Profile.vue'),
       },
+      {
+        path: '/mes-vehicules',
+        name: 'board-vehicles',
+        component: () => import('../views/board/Vehicles.vue'),
+      },
     ],
   },
   {

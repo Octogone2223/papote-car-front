@@ -16,6 +16,9 @@ import Dialog from 'primevue/dialog';
 import Card from 'primevue/card';
 import Timeline from 'primevue/timeline';
 import Checkbox from 'primevue/checkbox';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Dropdown from 'primevue/dropdown';
 
 // STYLES
 import 'uno.css';
@@ -42,5 +45,8 @@ app.component('Dialog', Dialog);
 app.component('Card', Card);
 app.component('Timeline', Timeline);
 app.component('Checkbox', Checkbox);
+app.component('DataTable', DataTable);
+app.component('Column', Column);
+app.component('Dropdown', Dropdown);
 
 app.mount('#app');
