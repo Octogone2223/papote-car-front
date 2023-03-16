@@ -5,10 +5,7 @@
       <div v-if="currentStep === 1">
         <h1>D'où partez vous ?</h1>
         <div>
-          <GMapAutocomplete
-            :force-validation="forceValidation"
-            @item-select="(v) => pushToTraject('startingPoint', v)"
-          />
+          <GMapAutocomplete :force-validation="forceValidation" @item-select="(v) => pushToTraject('startingPoint', v)" />
         </div>
       </div>
 
@@ -16,10 +13,7 @@
       <div v-else-if="currentStep === 2">
         <h1>Où allez vous ?</h1>
         <div>
-          <GMapAutocomplete
-            :force-validation="forceValidation"
-            @item-select="(v) => pushToTraject('endingPoint', v)"
-          />
+          <GMapAutocomplete :force-validation="forceValidation" @item-select="(v) => pushToTraject('endingPoint', v)" />
         </div>
       </div>
 
@@ -32,31 +26,20 @@
           </h1>
 
           <div style="text-align: center; margin-top: 2rem">
-            <Button
-              style="border-bottom: dotted"
-              label="Ajouter une étape"
-              class="p-button-text"
-              @click="isShowingNewTrajectStep = true"
-            />
+            <Button style="border-bottom: dotted" label="Ajouter une étape" class="p-button-text"
+              @click="isShowingNewTrajectStep = true" />
           </div>
         </div>
         <div v-else style="height: inherit" class="col">
           <h1>Ajouter une étape</h1>
 
           <div>
-            <GMapAutocomplete
-              :force-validation="forceValidation"
-              @item-select="
-                (v) => pushToTraject('steps', [...traject.steps, v])
-              "
-            />
+            <GMapAutocomplete :force-validation="forceValidation" @item-select="
+              (v) => pushToTraject('steps', [...traject.steps, v])
+            " />
           </div>
 
-          <Button
-            class="btn-section"
-            label="Ajouter cette étape"
-            @click="isShowingNewTrajectStep = false"
-          />
+          <Button class="btn-section" label="Ajouter cette étape" @click="isShowingNewTrajectStep = false" />
         </div>
       </div>
 
@@ -100,11 +83,7 @@
         </div>
         <div class="col">
           <p>Sélectionner votre voiture</p>
-          <Dropdown
-            v-model="selectedCar"
-            :options="cars"
-            placeholder="Sélectionner une voiture"
-          >
+          <Dropdown v-model="selectedCar" :options="cars" placeholder="Sélectionner une voiture">
             <template #value="slotProps">
               <div class="p-dropdown-car-value">
                 <span>{{ displayCarLabel(slotProps.value) }}</span>
@@ -138,14 +117,8 @@
       </div>
     </transition>
 
-    <StepIndicator
-      v-show="!isShowingNewTrajectStep"
-      :steps="7"
-      @change-step="(step) => changeStep(step)"
-      @complete="() => handleAddTravel()"
-      class="stepper"
-      :handler="handleValidation"
-    />
+    <StepIndicator v-show="!isShowingNewTrajectStep" :steps="7" @change-step="(step) => changeStep(step)"
+      @complete="() => handleAddTravel()" class="stepper" :handler="handleValidation" />
   </div>
 </template>
 
@@ -170,13 +143,13 @@ const traject = ref({
   endingPoint: null as suggestion | null,
   steps: [] as suggestion[],
   nbPassengers: null as number | null,
-  date: '',
+  date: "",
   smoker: false,
   petAccepted: false,
 });
 
 const pushToTraject = (
-  key: 'startingPoint' | 'endingPoint' | 'steps',
+  key: "startingPoint" | "endingPoint" | "steps",
   value: any
 ) => {
   traject.value[key] = value;
@@ -196,7 +169,7 @@ const handleValidation = () => {
   if (
     currentStep.value === 5 &&
     traject.value.nbPassengers === null &&
-    traject.value.date === ''
+    traject.value.date === ""
   ) {
     forceValidation.value = true;
     return false;
@@ -238,6 +211,8 @@ const handleAddTravel = async () => {
     ],
   };
 
+
+
   const travel = await travelApi.postTravel(body);
   console.log(
     '🚀 ~ file: AddTravel.vue:221 ~ handleAddTravel ~ travel:',
@@ -264,21 +239,25 @@ const displayCarLabel = (car: Car) => {
   flex-direction: column;
   height: 100%;
 
-  > .stepper {
+  >.stepper {
     margin: auto auto 0 auto;
   }
 }
+
 .btn-section {
   margin: auto auto 0 auto;
 }
+
 .slide-fade-enter-from {
   transform: translateX(v-bind(transitionPxInit));
   opacity: 0;
 }
+
 .slide-fade-enter-active,
 .slide-fade-leave-active {
   transition: all 0.3s ease;
 }
+
 .slide-fade-leave-to {
   transform: translateX(v-bind(transitionPx));
   opacity: 0;
