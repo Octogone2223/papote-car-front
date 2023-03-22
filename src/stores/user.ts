@@ -56,5 +56,14 @@ export const useUserStore = defineStore({
       this.currentUser = null;
       this.loading = false;
     },
+
+    async update(input: User) {
+      this.loading = true;
+
+      const user = await userApi.update(input);
+
+      this.currentUser = user;
+      this.loading = false;
+    },
   },
 });

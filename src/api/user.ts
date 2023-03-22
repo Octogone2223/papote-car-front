@@ -2,9 +2,14 @@ import {
   LoginOutput,
   RegisterOutput,
   SendRegisterEmailOutput,
+  UpdateOutput,
   WhoIAmOutput,
 } from '@/types/outputs';
-import { LoginInput, RegisterInput } from '../types/inputs/user.input';
+import {
+  LoginInput,
+  RegisterInput,
+  UpdateInput,
+} from '../types/inputs/user.input';
 import { kyApi } from '~/config-api';
 
 const ressource = 'users';
@@ -45,4 +50,11 @@ const whoami = async (): Promise<WhoIAmOutput> => {
   return response.json();
 };
 
-export { login, register, sendRegisterEmail, whoami, getNewTokens };
+const update = async (json: UpdateInput): Promise<UpdateOutput> => {
+  const response = await kyApi.patch(`${ressource}/update-user`, {
+    json,
+  });
+  return response.json();
+};
+
+export { login, register, sendRegisterEmail, whoami, getNewTokens, update };

@@ -11,3 +11,5 @@ export interface RegisterInput {
   phone?: string;
   password: string;
 }
+
+export interface UpdateInput extends Omit<RegisterInput, 'password'> {}
