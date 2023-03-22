@@ -22,3 +22,5 @@ export interface RegisterOutput {
   accessToken: string;
   refreshToken: string;
 }
+
+export interface UpdateOutput extends WhoIAmOutput {}

@@ -6,4 +6,5 @@ export type User = {
   lastName: string;
   isVerified: boolean;
   description?: string;
+  username: string;
 };

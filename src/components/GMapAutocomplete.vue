@@ -15,7 +15,7 @@
         'p-invalid': v$.search.$error,
       }"
     />
-    <div v-on:click="toggleMap();" class="rightIcon">
+    <div v-on:click="toggleMap()" class="rightIcon">
       <i class="pi pi-map" id="checkIcon"></i>
     </div>
 
@@ -23,21 +23,19 @@
       <ErrorsHandler :errors="v$.search.$errors" />
     </div>
   </div>
-  <transition name="slide-fade" appear :key="mapVisible" >
-          <div
-            v-if="mapVisible"
-          >
-            <MapboxMap
-            class="boxMap"
-              access-token="pk.eyJ1Ijoia2F5bWthc3NhaTI2OSIsImEiOiJjbDlpZnBkemMwN2prM3V0NWY4aWp6bjF2In0.gAVDArLVqLnjG4o1Uttgkw"
-              map-style="mapbox://styles/mapbox/streets-v11"
-              :center="mapCoords"
-              :zoom="15"
-            >
-              <MapboxMarker :lng-lat="mapCoords" />
-            </MapboxMap>
-            </div>
-    </transition>
+  <transition name="slide-fade" appear :key="mapVisible">
+    <div v-if="mapVisible">
+      <MapboxMap
+        class="boxMap"
+        access-token="pk.eyJ1Ijoia2F5bWthc3NhaTI2OSIsImEiOiJjbDlpZnBkemMwN2prM3V0NWY4aWp6bjF2In0.gAVDArLVqLnjG4o1Uttgkw"
+        map-style="mapbox://styles/mapbox/streets-v11"
+        :center="mapCoords"
+        :zoom="15"
+      >
+        <MapboxMarker :lng-lat="mapCoords" />
+      </MapboxMap>
+    </div>
+  </transition>
 </template>
 
 <script setup lang="ts">
@@ -48,7 +46,6 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { Ref } from 'vue';
 import { helpers, required as requiredR } from '@vuelidate/validators';
 import useVuelidate from '@vuelidate/core';
-import { defineEmits } from 'vue';
 
 const search = ref('');
 const suggestions = ref<suggestion[]>([]);
@@ -80,7 +77,6 @@ const onSelect = async (suggestion: Ref<suggestion>) => {
 };
 
 const hasApiBeenCalled = ref(false);
-
 
 const toggleMap = async () => {
   if (mapVisible.value) {
@@ -131,13 +127,9 @@ const getSuggestions = async () => {
     center: feature.center,
   }));
 };
-
-
-
 </script>
 <style lang="scss">
-
-  .gMapAutocomplete {
+.gMapAutocomplete {
   display: flex;
   .rightIcon {
     width: 45px;
@@ -152,7 +144,7 @@ const getSuggestions = async () => {
     cursor: pointer;
 
     i {
-      color: #14B8A6;
+      color: #14b8a6;
     }
   }
   input {
@@ -198,7 +190,7 @@ const getSuggestions = async () => {
 }
 
 .rightIcon i {
-  color: #14B8A6;
+  color: #14b8a6;
   transition: transform 0.3s ease;
 }
 

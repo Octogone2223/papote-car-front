@@ -1,9 +1,9 @@
 <template>
-  <div style="height: calc(100vh - 58px - 2rem)">
+  <div style="height: calc(100vh - 58px - 2rem)" v-if="currentUser">
     <div class="profil-view">
       <div class="avatar col center">
         <Avatar
-          label="A"
+          :label="getInitials"
           size="xlarge"
           class="avatar"
           style="background: var(--primary-color); color: white"
@@ -182,11 +182,19 @@ const v$ = useVuelidate(
   }
 );
 
+const userStore = useUserStore();
+
 const handleUpdateUser = async () => {
   const isFormValid = await v$.value.user.$validate();
 
   if (!isFormValid) return;
+
+  await userStore.update(details.value);
 };
+
+const getInitials = computed(() =>
+  `${currentUser.value.lastName[0]}${currentUser.value.firstName[0]}`.toUpperCase()
+);
 </script>
 
 <style scoped lang="scss">
