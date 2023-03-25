@@ -14,3 +14,4 @@ const getTravels = async (json: GetTravelInput) => {
 };
 
 export { postTravel };
+export { getTravels };

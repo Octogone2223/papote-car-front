@@ -5,12 +5,13 @@ export interface PostTravelInput {
   steps: Step[];
 }
 
-
 export interface GetTravelInput {
-  smoker: boolean;
-  petAccepted: boolean;
   startingPoint: string;
   endingPoint: string;
+  passengerCount: number;
+  travelDate: string;
+  isSmoker: boolean;
+  petsAllowed: boolean;
 }
 
 interface Step {

@@ -86,89 +86,61 @@
 
       <div v-else-if="currentStep === 4">
         <h2>Vérifiez les informations de réservations</h2>
-  <br />
-  <Timeline :value="events">
-  <template #opposite="slotProps">
-  {{ slotProps.item.date }}
-  </template>
-  <template #content="slotProps">
-  {{ slotProps.item.status }}
-  </template>
-  </Timeline>
-  </div><div v-else-if="currentStep === 5">
-      <h2>Réservation envoyée</h2>
-      <div style="padding: 35px; text-align: center">
-        <i class="pi pi-check-circle" id="checkIcon"></i>
+        <br />
+        <Timeline :value="events">
+          <template #opposite="slotProps">
+            {{ slotProps.item.date }}
+          </template>
+          <template #content="slotProps">
+            {{ slotProps.item.status }}
+          </template>
+        </Timeline>
       </div>
-      <p>
-        Votre réservation a été envoyé à * Nom conducteur *. Vous recevrez un
-        e-mail dès que votre trajet sera validé.
-      </p>
-    </div>
-  </transition>
-  <StepIndicator
-    :steps="5"
-    @change-step="(step) => changeStep(step)"
-    class="stepper"
-    :handler="handleValidation"
-  />  </div>
+      <div v-else-if="currentStep === 5">
+        <h2>Réservation envoyée</h2>
+        <div style="padding: 35px; text-align: center">
+          <i class="pi pi-check-circle" id="checkIcon"></i>
+        </div>
+        <p>
+          Votre réservation a été envoyé à * Nom conducteur *. Vous recevrez un
+          e-mail dès que votre trajet sera validé.
+        </p>
+      </div>
+    </transition>
+    <StepIndicator :steps="5" @change-step="(step) => changeStep(step)" class="stepper" :handler="handleValidation" />
+  </div>
 </template>
+
 <script setup lang="ts">
-import { travelApi } from '@/api';
+import { getTravels } from '@/api/travel';
 import { UseTransitionOnStep } from '@/composables';
-import { stringify } from 'querystring';
+import { GetTravelInput } from '@/types/inputs/travel.input';
 
 const { transitionPxInit, transitionPx, currentStep, changeStep } =
   UseTransitionOnStep;
 
 const isShowingNewTrajectStep = ref(false);
 
-interface suggestion {
+interface Suggestion {
   label: string;
   center: number[];
 }
 
-const events = [
-  {
-    status: "Nantes",
-    date: "15/10/2020 10:30",
-    icon: "pi pi-shopping-cart",
-    color: "#9C27B0",
-    image: "game-controller.jpg",
-  },
-  {
-    status: "Paris",
-    date: "15/10/2020 14:00",
-    icon: "pi pi-cog",
-    color: "#673AB7",
-  },
-  {
-    status: "Lion",
-    date: "15/10/2020 16:15",
-    icon: "pi pi-shopping-cart",
-    color: "#FF9800",
-  },
-  {
-    status: "New-York",
-    date: "16/10/2020 10:00",
-    icon: "pi pi-check",
-    color: "#607D8B",
-  },
-];
+const events: never[] = [/* ... */];
 
 const today = new Date();
-const date = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
-const time = today.getHours() + ":" + today.getMinutes();
+const date = today.toISOString().substring(0, 10);
+const time = today.toLocaleTimeString('fr-FR', { hour12: false });
 
-const dateTime = date + ' ' + time;
+const dateTime = date + 'T' + time;
 
-const traject = ref({
-  startingPoint: null as suggestion | null,
-  endingPoint: null as suggestion | null,
+const traject = reactive({
+  startingPoint: null as Suggestion | null,
+  endingPoint: null as Suggestion | null,
   nbPassengers: 1 as number,
-  date: dateTime as string,
-  smoker: true as boolean,
-  petAccepted: true as boolean,
+  date: dateTime,
+  smoker: false as boolean,
+  petAccepted: false as boolean,
 });
 
 const forceValidation = ref(false);
@@ -176,10 +148,7 @@ const forceValidation = ref(false);
 const handleValidation = () => {
   if (
     currentStep.value === 1 &&
-    traject.value.startingPoint === null &&
-    traject.value.endingPoint === null &&
-    traject.value.date === '' &&
-    traject.value.nbPassengers === null
+    (traject.startingPoint == null || traject.endingPoint == null || traject.date === '' || traject.nbPassengers == null)
   ) {
     forceValidation.value = true;
     return false;
@@ -190,16 +159,26 @@ const handleValidation = () => {
 };
 
 const handleSearchTravel = async () => {
-  //TODO : when the API will be ready, update this part
-  const body = {
-    smoker: false,
-    petAccepted: false,
-    startingPoint: '',
-    endingPoint: ''
-  } as any;
-  //const travel = await travelApi.getTravels(traject.value);
+  if (handleValidation()) {
+    const queryParams: GetTravelInput = {
+      startingPoint: traject.startingPoint?.label ?? '',
+      endingPoint: traject.endingPoint?.label ?? '',
+      passengerCount: traject.nbPassengers ?? 1,
+      travelDate: traject.date!,
+      isSmoker: traject.smoker!,
+      petsAllowed: traject.petAccepted!,
+    };
+
+    const travels = await getTravels(queryParams);
+    console.log(travels);
+  }
 };
 
+watch([currentStep], ([newStep]) => {
+  if (newStep === 2) {
+    handleSearchTravel();
+  }
+});
 </script>
 <style scoped lang="scss">
 .wrapper {
