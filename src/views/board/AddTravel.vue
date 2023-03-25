@@ -7,6 +7,7 @@
         <div>
           <GMapAutocomplete
             :force-validation="forceValidation"
+            :map-visible="true"
             @item-select="(v) => pushToTraject('startingPoint', v)"
           />
         </div>
@@ -18,6 +19,7 @@
         <div>
           <GMapAutocomplete
             :force-validation="forceValidation"
+            :map-visible="true"
             @item-select="(v) => pushToTraject('endingPoint', v)"
           />
         </div>
@@ -49,6 +51,7 @@
               @item-select="
                 (v) => pushToTraject('steps', [...traject.steps, v])
               "
+              :map-visible="true"
             />
           </div>
 

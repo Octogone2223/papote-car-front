@@ -98,24 +98,53 @@
               @click="handleUpdateUser"
             />
           </div>
+          <Divider
+            style="
+              background: var(--surface-300);
+              height: 1px;
+              margin-top: 0 !important;
+            "
+          />
+          <div class="col">
+            <Button
+              label="Se déconnecter"
+              class="p-button-outlined p-button-danger"
+              style="margin: 0 0 1rem 0"
+              @click="handleLogout"
+            />
+          </div>
         </div>
       </div>
 
       <div v-else-if="currentTab === 'password'" class="col">
         <div class="col">
-          <p>Mot de passe actuel</p>
-          <InputText type="text" />
-        </div>
-        <div class="col">
           <p>Nouveau mot de passe</p>
-          <InputText type="text" />
+          <InputText
+            type="password"
+            v-model="password.newPassword"
+            :class="{
+              'p-invalid': v$.password.newPassword.$error,
+            }"
+          />
+          <ErrorsHandler :errors="v$.password.newPassword.$errors" />
         </div>
         <div class="col">
           <p>Confirmation du mot de passe</p>
-          <InputText type="text" />
+          <InputText
+            type="password"
+            v-model="password.confirmNewPassword"
+            :class="{
+              'p-invalid': v$.password.confirmNewPassword.$error,
+            }"
+          />
+          <ErrorsHandler :errors="v$.password.confirmNewPassword.$errors" />
         </div>
 
-        <Button label="Appliquer" style="margin-top: 1rem" />
+        <Button
+          label="Appliquer"
+          style="margin-top: 1rem"
+          @click="handleUpdatePassword"
+        />
       </div>
     </transition>
   </div>
@@ -145,6 +174,10 @@ const items = [
 const currentTab = ref<'password' | 'details'>('details');
 
 const details = ref({ ...currentUser.value });
+const password = ref({
+  newPassword: '',
+  confirmNewPassword: '',
+});
 
 const rules = {
   user: {
@@ -170,12 +203,31 @@ const rules = {
       ),
     },
   },
+  password: {
+    newPassword: {
+      required: helpers.withMessage(`Un mot de passe est requis`, requiredR),
+      minLength: helpers.withMessage(
+        `Le mot de passe doit faire au moins 8 caractères`,
+        minLengthR(8)
+      ),
+    },
+    confirmNewPassword: {
+      sameAsPassword: helpers.withMessage(
+        `Les mots de passe ne correspondent pas`,
+        () => {
+          return (
+            password.value.confirmNewPassword === password.value.newPassword
+          );
+        }
+      ),
+    },
+  },
 };
-
 const v$ = useVuelidate(
   rules,
   {
     user: details.value,
+    password: password.value,
   },
   {
     $autoDirty: true,
@@ -190,6 +242,22 @@ const handleUpdateUser = async () => {
   if (!isFormValid) return;
 
   await userStore.update(details.value);
+};
+
+const handleUpdatePassword = async () => {
+  const isFormValid = await v$.value.password.$validate();
+
+  if (!isFormValid) return;
+
+  await userStore.updatePassword(password.value.newPassword);
+};
+
+const router = useRouter();
+
+const handleLogout = async () => {
+  await userStore.logout();
+
+  router.replace({ name: 'login' });
 };
 
 const getInitials = computed(() =>

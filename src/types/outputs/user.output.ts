@@ -23,4 +23,14 @@ export interface RegisterOutput {
   refreshToken: string;
 }
 
+export interface UpdatePasswordOutput {
+  success: true;
+  message: 'Password reset email sent successfully';
+}
+
+export interface ResetPasswordOutput {
+  success: true;
+  message: 'Password reset successfully';
+}
+
 export interface UpdateOutput extends WhoIAmOutput {}

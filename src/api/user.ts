@@ -1,15 +1,19 @@
 import {
   LoginOutput,
   RegisterOutput,
+  ResetPasswordOutput,
   SendRegisterEmailOutput,
   UpdateOutput,
+  UpdatePasswordOutput,
   WhoIAmOutput,
 } from '@/types/outputs';
 import {
   LoginInput,
   RegisterInput,
+  ResetPasswordInput,
   UpdateInput,
-} from '../types/inputs/user.input';
+  UpdatePasswordInput,
+} from '@/types/inputs';
 import { kyApi } from '~/config-api';
 
 const ressource = 'users';
@@ -57,4 +61,36 @@ const update = async (json: UpdateInput): Promise<UpdateOutput> => {
   return response.json();
 };
 
-export { login, register, sendRegisterEmail, whoami, getNewTokens, update };
+const updatePassword = async (
+  json: UpdatePasswordInput
+): Promise<UpdatePasswordOutput> => {
+  const response = await kyApi.post(`${ressource}/send-password-reset-email`, {
+    json,
+  });
+  return response.json();
+};
+
+const resetPassword = async (
+  json: ResetPasswordInput
+): Promise<ResetPasswordOutput> => {
+  const response = await kyApi.patch(`${ressource}/reset-password`, {
+    json,
+  });
+  return response.json();
+};
+
+const logout = async (): Promise<void> => {
+  await kyApi.get(`${ressource}/logout`);
+};
+
+export {
+  login,
+  register,
+  sendRegisterEmail,
+  whoami,
+  getNewTokens,
+  update,
+  updatePassword,
+  resetPassword,
+  logout,
+};

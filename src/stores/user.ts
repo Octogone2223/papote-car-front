@@ -51,7 +51,11 @@ export const useUserStore = defineStore({
 
     async logout() {
       this.loading = true;
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      await userApi.logout();
+
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
 
       this.currentUser = null;
       this.loading = false;
@@ -63,6 +67,22 @@ export const useUserStore = defineStore({
       const user = await userApi.update(input);
 
       this.currentUser = user;
+      this.loading = false;
+    },
+
+    async updatePassword(newPassword: string) {
+      this.loading = true;
+
+      localStorage.setItem('tempPassword', newPassword);
+
+      if (!this.currentUser) {
+        throw new Error('No user found');
+      }
+
+      await userApi.updatePassword({
+        email: this.currentUser?.email,
+      });
+
       this.loading = false;
     },
   },
