@@ -16,15 +16,15 @@
       }"
     />
     <div v-on:click="toggleMap()" class="rightIcon">
-      <i class="pi pi-map" id="checkIcon"></i>
+      <i class="pi pi-map" id="checkIcon" :class="{ canShowMap }"></i>
     </div>
 
     <div style="margin: 0 0 1rem 0">
       <ErrorsHandler :errors="v$.search.$errors" />
     </div>
   </div>
-  <transition name="slide-fade" appear :key="mapVisible">
-    <div v-if="mapVisible">
+  <transition name="slide-fade" appear :key="canShowMap">
+    <div v-if="canShowMap">
       <MapboxMap
         class="boxMap"
         access-token="pk.eyJ1Ijoia2F5bWthc3NhaTI2OSIsImEiOiJjbDlpZnBkemMwN2prM3V0NWY4aWp6bjF2In0.gAVDArLVqLnjG4o1Uttgkw"
@@ -51,7 +51,6 @@ const search = ref('');
 const suggestions = ref<suggestion[]>([]);
 const mapCoords = ref([-1.553621, 47.218371]); // Nantes by default (no active geolocation)
 const canCallApi = ref(true);
-const mapVisible = ref(false);
 
 /* VALIDATIONS */
 const rules = {
@@ -76,20 +75,6 @@ const onSelect = async (suggestion: Ref<suggestion>) => {
   emits('item-select', suggestion.value);
 };
 
-const hasApiBeenCalled = ref(false);
-
-const toggleMap = async () => {
-  if (mapVisible.value) {
-    mapVisible.value = false;
-  } else {
-    if (!hasApiBeenCalled.value) {
-      await getSuggestions();
-      hasApiBeenCalled.value = true;
-    }
-    mapVisible.value = true;
-  }
-};
-
 interface suggestion {
   label: string;
   center: number[];
@@ -105,6 +90,12 @@ const props = defineProps({
     default: false,
   },
 });
+
+const canShowMap = ref(props.mapVisible);
+
+const toggleMap = async () => {
+  canShowMap.value = !canShowMap.value;
+};
 
 watch(
   () => props.forceValidation,
@@ -194,11 +185,7 @@ const getSuggestions = async () => {
   transition: transform 0.3s ease;
 }
 
-.gMapAutocomplete.mapVisible .rightIcon i {
+.gMapAutocomplete i.canShowMap {
   transform: rotate(90deg);
-}
-
-.gMapAutocomplete.mapVisible.false .rightIcon i {
-  transform: rotate(0deg);
 }
 </style>
