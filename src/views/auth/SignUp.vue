@@ -98,6 +98,7 @@
             <label for="password">Mot de passe</label>
             <InputText
               id="password"
+              type="password"
               v-model="user.password"
               aria-describedby="password"
               @keydown.enter="() => handleRegister"
@@ -113,7 +114,7 @@
             <label for="confirmPassword">Confirmation du mot de passe</label>
             <InputText
               id="confirmPassword"
-              type="confirmPassword"
+              type="password"
               v-model="confirmPassword"
               aria-describedby="confirmPassword"
               autocomplete="confirmPassword"
@@ -146,6 +147,9 @@ import {
   helpers,
 } from '@vuelidate/validators';
 import { UseTransitionOnStep } from '@/composables';
+import { toast } from 'vue-sonner';
+import router from '@/router';
+
 const { transitionPxInit, transitionPx, currentStep, changeStep } =
   UseTransitionOnStep;
 
@@ -220,13 +224,21 @@ const v$ = useVuelidate(
 
 const userStore = useUserStore();
 const handleRegister = async () => {
-  await userStore.register(user.value).catch((err) => {
-    if (err.response.status === 409) {
-      alreadyExists.value = true;
-      changeStep(2);
-      v$.value.user.email.$touch();
-    }
-  });
+  await userStore
+    .register(user.value)
+    .then(async () => {
+      toast.success('Un mail de confirmation vous a été envoyé');
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      router.push({ name: 'login' });
+    })
+    .catch((err) => {
+      if (err.response.status === 409) {
+        alreadyExists.value = true;
+        changeStep(2);
+        v$.value.user.email.$touch();
+        toast.error('Cet email est déjà utilisé');
+      }
+    });
 };
 
 const handleValidation = async () => {
