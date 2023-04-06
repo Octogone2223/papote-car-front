@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores';
-import { userApi } from '@/api';
 
 const userStore = useUserStore();
 const { isLogin } = storeToRefs(userStore);
@@ -8,7 +7,6 @@ const { isLogin } = storeToRefs(userStore);
 const { currentUser } = storeToRefs(userStore);
 
 const userGetByApi = ref();
-const callApi = async () => (userGetByApi.value = await userApi.getUser('1'));
 </script>
 
 <template>
@@ -20,8 +18,6 @@ const callApi = async () => (userGetByApi.value = await userApi.getUser('1'));
   <br />
 
   user store : {{ currentUser }}
-
-  <button @click="callApi">CALL API</button>
 
   <br />
 

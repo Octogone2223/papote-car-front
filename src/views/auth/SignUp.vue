@@ -129,7 +129,7 @@
 
     <StepIndicator
       :steps="3"
-      @change-step="(step) => changeStep(step)"
+      @change-step="(step: number) => changeStep(step)"
       @complete="() => handleRegister()"
       :handler="handleValidation"
     />
