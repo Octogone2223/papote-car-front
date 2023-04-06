@@ -5,8 +5,11 @@
       <div v-if="currentStep === 1">
         <h1>D'où partez vous ?</h1>
         <div>
-          <GMapAutocomplete :force-validation="forceValidation" :map-visible="true"
-            @item-select="(v) => pushToTraject('startingPoint', v)" />
+          <GMapAutocomplete
+            :force-validation="forceValidation"
+            :map-visible="true"
+            @item-select="(v: suggestion) => pushToTraject('startingPoint', v)"
+          />
         </div>
       </div>
 
@@ -14,8 +17,11 @@
       <div v-else-if="currentStep === 2">
         <h1>Où allez vous ?</h1>
         <div>
-          <GMapAutocomplete :force-validation="forceValidation" :map-visible="true"
-            @item-select="(v) => pushToTraject('endingPoint', v)" />
+          <GMapAutocomplete
+            :force-validation="forceValidation"
+            :map-visible="true"
+            @item-select="(v: suggestion) => pushToTraject('endingPoint', v)"
+          />
         </div>
       </div>
 
@@ -28,20 +34,32 @@
           </h1>
 
           <div style="text-align: center; margin-top: 2rem">
-            <Button style="border-bottom: dotted" label="Ajouter une étape" class="p-button-text"
-              @click="isShowingNewTrajectStep = true" />
+            <Button
+              style="border-bottom: dotted"
+              label="Ajouter une étape"
+              class="p-button-text"
+              @click="isShowingNewTrajectStep = true"
+            />
           </div>
         </div>
         <div v-else style="height: inherit" class="col">
           <h1>Ajouter une étape</h1>
 
           <div>
-            <GMapAutocomplete :force-validation="forceValidation" @item-select="
-              (v) => pushToTraject('steps', [...traject.steps, v])
-            " :map-visible="true" />
+            <GMapAutocomplete
+              :force-validation="forceValidation"
+              @item-select="
+                (v: suggestion) => pushToTraject('steps', [...traject.steps, v])
+              "
+              :map-visible="true"
+            />
           </div>
 
-          <Button class="btn-section" label="Ajouter cette étape" @click="isShowingNewTrajectStep = false" />
+          <Button
+            class="btn-section"
+            label="Ajouter cette étape"
+            @click="isShowingNewTrajectStep = false"
+          />
         </div>
       </div>
 
@@ -85,7 +103,11 @@
         </div>
         <div class="col">
           <p>Sélectionner votre voiture</p>
-          <Dropdown v-model="selectedCar" :options="cars" placeholder="Sélectionner une voiture">
+          <Dropdown
+            v-model="selectedCar"
+            :options="cars"
+            placeholder="Sélectionner une voiture"
+          >
             <template #value="slotProps">
               <div class="p-dropdown-car-value">
                 <span>{{ displayCarLabel(slotProps.value) }}</span>
@@ -119,8 +141,14 @@
       </div>
     </transition>
 
-    <StepIndicator v-show="!isShowingNewTrajectStep" :steps="7" @change-step="(step) => changeStep(step)"
-      @complete="() => handleAddTravel()" class="stepper" :handler="handleValidation" />
+    <StepIndicator
+      v-show="!isShowingNewTrajectStep"
+      :steps="7"
+      @change-step="(step: number) => changeStep(step)"
+      @complete="() => handleAddTravel()"
+      class="stepper"
+      :handler="handleValidation"
+    />
   </div>
 </template>
 
@@ -129,7 +157,6 @@ import { travelApi } from '@/api';
 import { UseTransitionOnStep } from '@/composables';
 import { useCarStore } from '@/stores';
 import { Car } from '@/types';
-import { PostTravelInput } from '@/types/inputs';
 const { transitionPxInit, transitionPx, currentStep, changeStep } =
   UseTransitionOnStep;
 
@@ -182,8 +209,12 @@ const handleValidation = () => {
 };
 
 const handleAddTravel = async () => {
-  if (!selectedCar.value || !traject.value.startingPoint || !traject.value.endingPoint) {
-    console.error("Car, starting point or ending point is not selected.");
+  if (
+    !selectedCar.value ||
+    !traject.value.startingPoint ||
+    !traject.value.endingPoint
+  ) {
+    console.error('Car, starting point or ending point is not selected.');
     return;
   }
 
@@ -198,12 +229,16 @@ const handleAddTravel = async () => {
       dateStart: traject.value.date,
       place: traject.value.nbPassengers!,
       townStart: step.label,
-      townEnd: (traject.value.steps[i + 1]?.label) ? traject.value.steps[i + 1].label : traject.value.endingPoint?.label || '',
+      townEnd: traject.value.steps[i + 1]?.label
+        ? traject.value.steps[i + 1].label
+        : traject.value.endingPoint?.label || '',
     })),
     {
       dateStart: traject.value.date,
       place: traject.value.nbPassengers!,
-      townStart: traject.value.steps[traject.value.steps.length - 1]?.label || traject.value.startingPoint.label,
+      townStart:
+        traject.value.steps[traject.value.steps.length - 1]?.label ||
+        traject.value.startingPoint.label,
       townEnd: traject.value.endingPoint.label,
     },
   ];
@@ -218,7 +253,7 @@ const handleAddTravel = async () => {
   try {
     await travelApi.postTravel(body);
   } catch (error) {
-    console.error("Error while adding travel:", error);
+    console.error('Error while adding travel:', error);
   }
 };
 
@@ -241,7 +276,7 @@ const displayCarLabel = (car: Car) => {
   flex-direction: column;
   height: 100%;
 
-  >.stepper {
+  > .stepper {
     margin: auto auto 0 auto;
   }
 }

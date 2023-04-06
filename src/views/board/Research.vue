@@ -7,12 +7,18 @@
           <div>
             <label for="start">Départ:</label>
             <div>
-              <GMapAutocomplete :force-validation="forceValidation" v-model="traject.startingPoint" />
+              <GMapAutocomplete
+                :force-validation="forceValidation"
+                v-model="traject.startingPoint"
+              />
             </div>
           </div>
           <label for="destination">Destination:</label>
           <div>
-            <GMapAutocomplete :force-validation="forceValidation" v-model="traject.endingPoint" />
+            <GMapAutocomplete
+              :force-validation="forceValidation"
+              v-model="traject.endingPoint"
+            />
           </div>
           <div>
             <label for="date">Date:</label>
@@ -20,14 +26,23 @@
           </div>
           <div>
             <label for="passengers">Nombre de voyageurs:</label>
-            <InputNumber v-model="traject.nbPassengers" type="number" id="passengers" name="passengers" />
+            <InputNumber
+              v-model="traject.nbPassengers"
+              type="number"
+              id="passengers"
+              name="passengers"
+            />
           </div>
         </form>
       </div>
 
       <div v-else-if="currentStep === 2">
         <div class="profil-view">
-          <Button class="p-button-text" @click="$router.go(-1)" icon="pi pi-arrow-left" />
+          <Button
+            class="p-button-text"
+            @click="$router.go(-1)"
+            icon="pi pi-arrow-left"
+          />
           <p>
             Nantes, France <i class="pi pi-arrow-right"></i> Paris, France
             <br />1 passager
@@ -76,7 +91,12 @@
         <div class="conducteur">
           <div class="avatar">
             <p>Jhon Does</p>
-            <Avatar label="A" size="xlarge" class="avatar" style="background: var(--primary-color); color: white" />
+            <Avatar
+              label="A"
+              size="xlarge"
+              class="avatar"
+              style="background: var(--primary-color); color: white"
+            />
             <i class="pi pi-angle-right"></i>
             <br /><br />
             <href>Contacter Jhon Does</href>
@@ -86,42 +106,40 @@
 
       <div v-else-if="currentStep === 4">
         <h2>Vérifiez les informations de réservations</h2>
-  <br />
-  <Timeline :value="events">
-  <template #opposite="slotProps">
-  {{ slotProps.item.date }}
-  </template>
-  <template #content="slotProps">
-  {{ slotProps.item.status }}
-  </template>
-  </Timeline>
-  </div><div v-else-if="currentStep === 5">
-      <h2>Réservation envoyée</h2>
-      <div style="padding: 35px; text-align: center">
-        <i class="pi pi-check-circle" id="checkIcon"></i>
+        <br />
+        <Timeline :value="events">
+          <template #opposite="slotProps">
+            {{ slotProps.item.date }}
+          </template>
+          <template #content="slotProps">
+            {{ slotProps.item.status }}
+          </template>
+        </Timeline>
       </div>
-      <p>
-        Votre réservation a été envoyé à * Nom conducteur *. Vous recevrez un
-        e-mail dès que votre trajet sera validé.
-      </p>
-    </div>
-  </transition>
-  <StepIndicator
-    :steps="5"
-    @change-step="(step) => changeStep(step)"
-    class="stepper"
-    :handler="handleValidation"
-  />  </div>
+      <div v-else-if="currentStep === 5">
+        <h2>Réservation envoyée</h2>
+        <div style="padding: 35px; text-align: center">
+          <i class="pi pi-check-circle" id="checkIcon"></i>
+        </div>
+        <p>
+          Votre réservation a été envoyé à * Nom conducteur *. Vous recevrez un
+          e-mail dès que votre trajet sera validé.
+        </p>
+      </div>
+    </transition>
+    <StepIndicator
+      :steps="5"
+      @change-step="(step: number) => changeStep(step)"
+      class="stepper"
+      :handler="handleValidation"
+    />
+  </div>
 </template>
 <script setup lang="ts">
-import { travelApi } from '@/api';
 import { UseTransitionOnStep } from '@/composables';
-import { stringify } from 'querystring';
 
 const { transitionPxInit, transitionPx, currentStep, changeStep } =
   UseTransitionOnStep;
-
-const isShowingNewTrajectStep = ref(false);
 
 interface suggestion {
   label: string;
@@ -130,35 +148,36 @@ interface suggestion {
 
 const events = [
   {
-    status: "Nantes",
-    date: "15/10/2020 10:30",
-    icon: "pi pi-shopping-cart",
-    color: "#9C27B0",
-    image: "game-controller.jpg",
+    status: 'Nantes',
+    date: '15/10/2020 10:30',
+    icon: 'pi pi-shopping-cart',
+    color: '#9C27B0',
+    image: 'game-controller.jpg',
   },
   {
-    status: "Paris",
-    date: "15/10/2020 14:00",
-    icon: "pi pi-cog",
-    color: "#673AB7",
+    status: 'Paris',
+    date: '15/10/2020 14:00',
+    icon: 'pi pi-cog',
+    color: '#673AB7',
   },
   {
-    status: "Lion",
-    date: "15/10/2020 16:15",
-    icon: "pi pi-shopping-cart",
-    color: "#FF9800",
+    status: 'Lion',
+    date: '15/10/2020 16:15',
+    icon: 'pi pi-shopping-cart',
+    color: '#FF9800',
   },
   {
-    status: "New-York",
-    date: "16/10/2020 10:00",
-    icon: "pi pi-check",
-    color: "#607D8B",
+    status: 'New-York',
+    date: '16/10/2020 10:00',
+    icon: 'pi pi-check',
+    color: '#607D8B',
   },
 ];
 
 const today = new Date();
-const date = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
-const time = today.getHours() + ":" + today.getMinutes();
+const date =
+  today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
+const time = today.getHours() + ':' + today.getMinutes();
 
 const dateTime = date + ' ' + time;
 
@@ -195,11 +214,10 @@ const handleSearchTravel = async () => {
     smoker: false,
     petAccepted: false,
     startingPoint: '',
-    endingPoint: ''
+    endingPoint: '',
   } as any;
   //const travel = await travelApi.getTravels(traject.value);
 };
-
 </script>
 <style scoped lang="scss">
 .wrapper {
@@ -207,7 +225,7 @@ const handleSearchTravel = async () => {
   height: 100%;
   flex-direction: column;
 
-  >.stepper {
+  > .stepper {
     margin: auto auto 0 auto;
   }
 }
@@ -247,7 +265,7 @@ const handleSearchTravel = async () => {
   width: 100%;
 
   td {
-    >label {
+    > label {
       padding-right: 4px;
       padding-left: 5px;
     }
