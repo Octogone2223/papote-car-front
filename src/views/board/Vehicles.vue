@@ -182,9 +182,11 @@
 <script setup lang="ts">
 import { useCarStore } from '@/stores';
 import { PatchUserCarInput } from '@/types/inputs';
+import { toastCustomError } from '@/utils/errors-handler';
 import useVuelidate from '@vuelidate/core';
 import { required as requiredR, helpers } from '@vuelidate/validators';
 import { DataTableRowEditCancelEvent } from 'primevue/datatable';
+import { toast } from 'vue-sonner';
 
 onMounted(async () => {
   await carsStore.getCars();
@@ -252,8 +254,15 @@ const handleAddCar = async () => {
 
   if (!isFormValid) return;
 
-  await carsStore.addCar(carDetails.value);
+  await carsStore
+    .addCar(carDetails.value)
+    .catch(() =>
+      toastCustomError(
+        "Une erreur est survenue lors de l'ajout de votre véhicule"
+      )
+    );
   isShowindAddCarModal.value = false;
+  toast.success('Votre véhicule a bien été ajouté');
 };
 
 const handleUpdateCar = async () => {
@@ -261,8 +270,15 @@ const handleUpdateCar = async () => {
 
   if (!isFormValid) return;
 
-  await carsStore.updateCar(selectedCar.value);
+  await carsStore
+    .updateCar(selectedCar.value)
+    .catch(() =>
+      toastCustomError(
+        'Une erreur est survenue lors de la modification de votre véhicule'
+      )
+    );
   isShowingEditCarModal.value = false;
+  toast.success('Votre véhicule a bien été modifié');
 };
 
 const onRowClick = (event: DataTableRowEditCancelEvent) => {
@@ -271,8 +287,15 @@ const onRowClick = (event: DataTableRowEditCancelEvent) => {
 };
 
 const handleRemoveCar = async () => {
-  await carsStore.removeCar(selectedCar.value.id);
+  await carsStore
+    .removeCar(selectedCar.value.id)
+    .catch(() =>
+      toastCustomError(
+        'Une erreur est survenue lors de la suppression de votre véhicule'
+      )
+    );
   isShowingEditCarModal.value = false;
+  toast.success('Votre véhicule a bien été supprimé');
 };
 </script>
 

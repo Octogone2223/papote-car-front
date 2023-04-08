@@ -153,6 +153,7 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores';
 import { User } from '@/types';
+import { toastCustomError } from '@/utils/errors-handler';
 import { Ref } from '@vue/reactivity';
 import { useVuelidate } from '@vuelidate/core';
 import {
@@ -161,6 +162,7 @@ import {
   minLength as minLengthR,
   helpers,
 } from '@vuelidate/validators';
+import { toast } from 'vue-sonner';
 
 const { currentUser } = storeToRefs(useUserStore()) as {
   currentUser: Ref<User>;
@@ -241,7 +243,15 @@ const handleUpdateUser = async () => {
 
   if (!isFormValid) return;
 
-  await userStore.update(details.value);
+  await userStore
+    .update(details.value)
+    .catch(() =>
+      toastCustomError(
+        'Une erreur est survenue lors de la mise à jour de votre profil'
+      )
+    );
+
+  toast.success('Votre profil a bien été mis à jour');
 };
 
 const handleUpdatePassword = async () => {
@@ -249,7 +259,15 @@ const handleUpdatePassword = async () => {
 
   if (!isFormValid) return;
 
-  await userStore.updatePassword(password.value.newPassword);
+  await userStore
+    .updatePassword(password.value.newPassword)
+    .catch(() =>
+      toastCustomError(
+        'Une erreur est survenue lors de la mise à jour de votre mot de passe'
+      )
+    );
+
+  toast.success('Votre mot de passe a bien été mis à jour');
 };
 
 const router = useRouter();
@@ -258,6 +276,8 @@ const handleLogout = async () => {
   await userStore.logout();
 
   router.replace({ name: 'login' });
+
+  toast.success('Vous avez bien été déconnecté');
 };
 
 const getInitials = computed(() =>
