@@ -1,7 +1,10 @@
-<script setup lang="ts"></script>
+<script lang="ts" setup>
+import { Toaster } from 'vue-sonner';
+</script>
 
 <template>
   <router-view :key="$route.fullPath" />
+  <Toaster position="top-center" richColors />
 </template>
 
 <style lang="scss">

@@ -87,7 +87,12 @@
         <h1>Configurer votre trajet</h1>
         <div class="col">
           <p>Date de départ</p>
-          <Calendar :showTime="true" touch-u-i v-model="traject.date" />
+          <Calendar
+            :showTime="true"
+            touch-u-i
+            v-model="traject.date"
+            :minDate="new Date()"
+          />
         </div>
         <div class="col">
           <p>Nombre de passagers</p>
@@ -155,8 +160,11 @@
 <script setup lang="ts">
 import { travelApi } from '@/api';
 import { UseTransitionOnStep } from '@/composables';
+import router from '@/router';
 import { useCarStore } from '@/stores';
 import { Car } from '@/types';
+import { toastCustomError } from '@/utils/errors-handler';
+import { toast } from 'vue-sonner';
 const { transitionPxInit, transitionPx, currentStep, changeStep } =
   UseTransitionOnStep;
 
@@ -214,7 +222,6 @@ const handleAddTravel = async () => {
     !traject.value.startingPoint ||
     !traject.value.endingPoint
   ) {
-    console.error('Car, starting point or ending point is not selected.');
     return;
   }
 
@@ -250,11 +257,14 @@ const handleAddTravel = async () => {
     steps,
   };
 
-  try {
-    await travelApi.postTravel(body);
-  } catch (error) {
-    console.error('Error while adding travel:', error);
-  }
+  await travelApi
+    .postTravel(body)
+    .catch(() =>
+      toastCustomError('Une erreur est survenue lors de la création du trajet')
+    );
+
+  toast.success('Trajet créé avec succès');
+  router.push({ name: 'board-publish' });
 };
 
 const carsStore = useCarStore();
@@ -262,6 +272,7 @@ const cars = computed(() => carsStore.cars);
 const selectedCar = ref(null as Car | null);
 onMounted(async () => {
   await carsStore.getCars();
+  currentStep.value = 1;
 });
 
 const displayCarLabel = (car: Car) => {
