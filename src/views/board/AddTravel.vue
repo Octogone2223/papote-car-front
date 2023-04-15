@@ -124,7 +124,15 @@
               </div>
             </template>
             <template #empty>
-              <div>OUI</div>
+              <div>
+                Aucun véhicule, en ajouter un ?
+                <Button
+                  label="Ajouter un véhicule"
+                  class="p-button-text p-button-sm"
+                  style="padding: 0; margin: 0; border: none"
+                  @click="isShowindAddCarModal = true"
+                />
+              </div>
             </template>
           </Dropdown>
         </div>
@@ -154,6 +162,79 @@
       class="stepper"
       :handler="handleValidation"
     />
+
+    <Dialog
+      :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
+      :style="{ width: '50vw' }"
+      header="Ajouter un véhicule"
+      v-model:visible="isShowindAddCarModal"
+      :modal="true"
+      style="padding: 0"
+    >
+      <div class="col">
+        <p>Marque</p>
+        <InputText
+          type="text"
+          v-model="carDetails.brand"
+          :class="{
+            'p-invalid': v$.car.brand.$error,
+          }"
+          @keydown.enter="() => handleAddCar"
+        />
+        <ErrorsHandler :errors="v$.car.brand.$errors" />
+      </div>
+      <div class="col">
+        <p>Modèle</p>
+        <InputText
+          type="text"
+          v-model="carDetails.model"
+          :class="{
+            'p-invalid': v$.car.model.$error,
+          }"
+          @keydown.enter="() => handleAddCar"
+        />
+        <ErrorsHandler :errors="v$.car.model.$errors" />
+      </div>
+      <div class="col">
+        <p>Places</p>
+        <InputNumber
+          v-model="carDetails.place"
+          :class="{
+            'p-invalid': v$.car.place.$error,
+          }"
+          @keydown.enter="() => handleAddCar"
+        />
+        <ErrorsHandler :errors="v$.car.place.$errors" />
+      </div>
+      <div class="col">
+        <p>Couleur</p>
+        <Dropdown
+          v-model="carDetails.color"
+          :options="carColorsOptions"
+          :class="{
+            'p-invalid': v$.car.color.$error,
+          }"
+          @keydown.enter="() => handleAddCar"
+        />
+        <ErrorsHandler :errors="v$.car.color.$errors" />
+      </div>
+
+      <template #footer>
+        <Button
+          label="Annuler"
+          class="p-button-text"
+          style="margin-top: 1rem"
+          @click="isShowindAddCarModal = false"
+        />
+
+        <Button
+          label="Ajouter"
+          icon="pi pi-check"
+          @click="handleAddCar"
+          autofocus
+        />
+      </template>
+    </Dialog>
   </div>
 </template>
 
@@ -165,15 +246,81 @@ import { useCarStore } from '@/stores';
 import { Car } from '@/types';
 import { toastCustomError } from '@/utils/errors-handler';
 import { toast } from 'vue-sonner';
+import useVuelidate from '@vuelidate/core';
+import { required as requiredR, helpers } from '@vuelidate/validators';
+
 const { transitionPxInit, transitionPx, currentStep, changeStep } =
   UseTransitionOnStep;
-
 const isShowingNewTrajectStep = ref(false);
 
 interface suggestion {
   label: string;
   center: number[];
 }
+
+const isShowindAddCarModal = ref(false);
+const carColorsOptions = [
+  'black',
+  'white',
+  'yellow',
+  'pink',
+  'green',
+  'darkBlue',
+  'blue',
+  'grey',
+];
+
+const carDetails = ref({
+  brand: '',
+  model: '',
+  place: 3,
+  color: '',
+});
+
+const generalRules = {
+  brand: {
+    required: helpers.withMessage(`Une marque est requise`, requiredR),
+  },
+  model: {
+    required: helpers.withMessage(`Un modèle est requis`, requiredR),
+  },
+  place: {
+    required: helpers.withMessage(`Un nombre de places est requis`, requiredR),
+  },
+  color: {
+    required: helpers.withMessage(`Une couleur est requise`, requiredR),
+  },
+};
+
+const rules = {
+  car: generalRules,
+};
+
+const v$ = useVuelidate(
+  rules,
+  {
+    car: carDetails.value,
+  },
+  {
+    $autoDirty: true,
+  }
+);
+
+const handleAddCar = async () => {
+  const isFormValid = await v$.value.car.$validate();
+
+  if (!isFormValid) return;
+
+  await carsStore
+    .addCar(carDetails.value)
+    .catch(() =>
+      toastCustomError(
+        "Une erreur est survenue lors de l'ajout de votre véhicule"
+      )
+    );
+  isShowindAddCarModal.value = false;
+  toast.success('Votre véhicule a bien été ajouté');
+};
 
 const traject = ref({
   startingPoint: null as suggestion | null,
@@ -268,7 +415,7 @@ const handleAddTravel = async () => {
 };
 
 const carsStore = useCarStore();
-const cars = computed(() => carsStore.cars);
+const cars = computed(() => []);
 const selectedCar = ref(null as Car | null);
 onMounted(async () => {
   await carsStore.getCars();

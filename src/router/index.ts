@@ -7,6 +7,9 @@ const routes = [
     path: '/',
     name: 'board',
     component: () => import('../views/board/Index.vue'),
+    redirect: () => {
+      return { name: 'board-messages' };
+    },
     children: [
       {
         path: '/messages',
