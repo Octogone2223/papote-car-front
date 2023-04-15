@@ -273,6 +273,7 @@ const handleValidation = async () => {
   width: 100%;
   padding: 2rem;
   height: 100%;
+  margin: auto;
 
   > div:first-child {
     height: 100%;

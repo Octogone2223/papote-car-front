@@ -1,5 +1,5 @@
 <template>
-  <div style="height: calc(100vh - 58px - 2rem)" v-if="currentUser">
+  <div style="height: calc(100% - 58px - 2rem)" v-if="currentUser">
     <div class="profil-view">
       <div class="avatar col center">
         <Avatar
@@ -288,7 +288,7 @@ const getInitials = computed(() =>
 <style scoped lang="scss">
 .profil-view {
   position: relative;
-  height: calc(40%);
+  height: 300px;
   background: var(--surface-100);
   border: var(--primary-color) dashed 1px;
 

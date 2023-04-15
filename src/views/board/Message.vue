@@ -1,11 +1,11 @@
 <template>
-  <Button
-    label="Retour"
-    class="p-button-text"
-    @click="$router.go(-1)"
-    icon="pi pi-arrow-left"
-  />
   <div class="chat">
+    <Button
+      label="Retour"
+      class="p-button-text"
+      @click="$router.go(-1)"
+      icon="pi pi-arrow-left"
+    />
     <div style="overflow-x: scroll; white-space: nowrap">
       <div class="wrapper">
         <div
@@ -64,17 +64,15 @@
 </template>
 
 <script setup lang="ts">
+import { useSocketIO } from '@/composables/use-socket-io';
 import { useUserStore } from '@/stores';
 import { nanoid } from 'nanoid';
 
 export type Message = {
-  id: string;
-  content: string;
-  type: string;
-  User: {
-    id: string;
-    username: string;
-  };
+  roomId: string;
+  sender: string;
+  receiver: string;
+  message: string;
 };
 
 const { currentUser } = useUserStore();
@@ -95,21 +93,36 @@ const chatMessages = ref<Message[]>(
   })
 );
 
+const { socket } = useSocketIO();
+
 const sendMessage = async () => {
   if (message.value === '') return;
 
+  const chatContent = {
+    roomId: '2fc118f8-d8b4-44ab-a17d-a5b8d5625e33',
+    sender: currentUser?.id,
+    receiver: '862c3eb2-4d3a-4942-b2cb-42314bed8b77',
+    message: message.value,
+  };
+
+  socket.emit('msgToServer', chatContent);
   message.value = '';
 };
+
+socket.on('msgToClient', (data: Message) => {
+  chatMessages.value.push(data);
+});
 </script>
 
 <style lang="scss" scoped>
 .chat-input {
   background: white;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  display: flex;
+  position: fixed;
   width: 100%;
+  max-width: 1024px;
+  bottom: 0;
+  display: flex;
+  margin-left: calc(-2rem - 1px);
   padding: 0.5rem;
   box-shadow: 0px 2px 4px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)),
     0px 4px 5px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)),
@@ -124,6 +137,12 @@ const sendMessage = async () => {
 
   input {
     width: 100%;
+  }
+
+  @media screen and (min-width: 1024px) {
+    margin-left: calc(-1rem - 1px);
+    box-shadow: none;
+    border: 1px solid #e6e6e6;
   }
 }
 

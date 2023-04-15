@@ -3,12 +3,14 @@
     <h4>{{ author }}</h4>
     <div class="row message-content">
       <p>{{ truncatedContent }}</p>
-      <Avatar
-        :label="author[0]"
-        style="padding: 1.5rem; margin: 0 1rem 0"
-        size="large"
-      />
-      <i class="pi pi-chevron-right" v-if="onclick" @click="onclick"></i>
+      <div style="cursor: pointer" @click="onclick">
+        <Avatar
+          :label="author[0]"
+          style="padding: 1.5rem; margin: 0 1rem 0"
+          size="large"
+        />
+        <i class="pi pi-chevron-right" v-if="onclick"></i>
+      </div>
     </div>
     <Divider
       style="

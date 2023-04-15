@@ -6,7 +6,7 @@
       :suggestions="suggestions"
       option-label="label"
       option-value="value"
-      @item-select="onSelect"
+      @item-select="(e: AutoCompleteItemUnselectEvent) => onSelect(e)"
       @focus="canCallApi = true"
       @complete="getSuggestions"
       style="width: 100%; margin: 1rem 0 0 0"
@@ -18,10 +18,9 @@
     <div v-on:click="toggleMap()" class="rightIcon">
       <i class="pi pi-map" id="checkIcon" :class="{ canShowMap }"></i>
     </div>
-
-    <div style="margin: 0 0 1rem 0">
-      <ErrorsHandler :errors="v$.search.$errors" />
-    </div>
+  </div>
+  <div>
+    <ErrorsHandler :errors="v$.search.$errors" />
   </div>
   <transition name="slide-fade" appear :key="canShowMap">
     <div v-if="canShowMap">
@@ -46,6 +45,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { Ref } from 'vue';
 import { helpers, required as requiredR } from '@vuelidate/validators';
 import useVuelidate from '@vuelidate/core';
+import { AutoCompleteItemUnselectEvent } from 'primevue/autocomplete';
 
 const search = ref('');
 const suggestions = ref<suggestion[]>([]);
@@ -69,7 +69,7 @@ const v$ = useVuelidate(
 
 const emits = defineEmits(['item-select']);
 
-const onSelect = async (suggestion: Ref<suggestion>) => {
+const onSelect = async (suggestion: AutoCompleteItemUnselectEvent) => {
   mapCoords.value = suggestion.value.center;
   canCallApi.value = false;
   emits('item-select', suggestion.value);
@@ -120,8 +120,19 @@ const getSuggestions = async () => {
 };
 </script>
 <style lang="scss">
+.mapboxgl-control-container {
+  display: none;
+}
+
+.boxMap.mapboxgl-map {
+  border-radius: 6px;
+  border: 1px solid #cfd4d9;
+  margin: 2rem 0;
+}
+
 .gMapAutocomplete {
   display: flex;
+
   .rightIcon {
     width: 45px;
     margin: 1rem 0px 0px;

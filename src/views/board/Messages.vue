@@ -2,31 +2,44 @@
   <div>
     <h1>Boîte de reception</h1>
 
-    <div>
+    <div v-if="chats && chats.length">
       <MessagePreview
-        :author="message.author"
-        :content="message.content"
-        v-for="message in fakes"
+        author="Lilian"
+        content="chat.content"
+        v-for="chat in chats"
         :onclick="
           () =>
             $router.push({
               name: 'board-messages-id',
-              params: { id: message.id },
+              params: { id: chat.id },
             })
         "
       />
+    </div>
+
+    <div v-else>
+      <p>Vous n'avez pas de messages</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { nanoid } from 'nanoid';
+import { chatApi } from '@/api';
 
-const fakes = new Array(10).fill({
-  id: nanoid(),
-  author: 'John Doe',
-  content:
-    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.',
+interface Chat {
+  id: string;
+  messages: {
+    content: string;
+    userId: string;
+  };
+}
+
+const chats = ref<Chat[]>([]);
+
+onMounted(async () => {
+  chats.value = (await chatApi.getRooms()) as Chat[];
+
+  await chatApi.postMessage('862c3eb2-4d3a-4942-b2cb-42314bed8b77');
 });
 </script>
 

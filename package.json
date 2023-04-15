@@ -17,6 +17,7 @@
     "pinia": "^2.0.30",
     "primeicons": "^6.0.1",
     "primevue": "^3.23.0",
+    "socket.io-client": "^4.6.1",
     "vee-validate": "^4.7.4",
     "vue": "^3.2.25",
     "vue-meta": "^3.0.0-alpha.10",

@@ -15,11 +15,39 @@ import { Toaster } from 'vue-sonner';
   box-sizing: border-box;
 }
 
+* {
+  /* SCROLLBAR */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+
+  &::-webkit-scrollbar,
+  &::-webkit-scrollbar-thumb {
+    width: 10px;
+    height: 10px;
+    border-radius: 13px;
+    background-clip: padding-box;
+    border: 2px solid transparent;
+    color: rgba(0, 0, 0, 0.3);
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    box-shadow: inset 0 0 0 10px;
+  }
+}
+
 html,
 body {
   height: 100%;
+  width: 100%;
   margin: 0;
   padding: 0;
+  background-color: #f8f9fa;
+  opacity: 1;
+  background-image: radial-gradient(#8eccc5 0.5px, transparent 0.5px),
+    radial-gradient(#8eccc5 0.5px, #f8f9fa 0.5px);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
 }
 
 h1,
@@ -36,12 +64,6 @@ h6 {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   height: 100%;
-
-  /* CUSTOM STYLE */
-  background: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .row {

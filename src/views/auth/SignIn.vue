@@ -119,6 +119,7 @@ const handleLogin = async () => {
   max-width: 600px;
   width: 100%;
   padding: 2rem;
+  margin: auto;
   height: 100%;
 
   > div {

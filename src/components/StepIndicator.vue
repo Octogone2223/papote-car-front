@@ -1,5 +1,5 @@
 <template>
-  <div class="row btn-section">
+  <div class="row" style="margin: 1rem auto">
     <Button
       class="p-button-rounded p-button-text p-button-secondary"
       @click="currentStep > 1 && changeStep(currentStep - 1)"
