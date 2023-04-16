@@ -10,41 +10,24 @@
       <div class="wrapper">
         <div
           v-for="chatMessage in chatMessages"
-          :key="chatMessage.id"
+          :key="chatMessage.date"
           style="overflow: scroll"
         >
           <div>
             <div
               class="chat-message"
               :class="{
-                'chat-message--right': Math.random() < 0.5,
-                'chat-message--info': chatMessage.type === 'info',
+                'chat-message--right':
+                  chatMessage.sender === String(currentUser!.id),
               }"
             >
               <div>
-                <div
-                  class="chat-message-username"
-                  v-if="chatMessage.type !== 'info'"
-                >
-                  {{ chatMessage.User.username }}
+                <div class="chat-message-username">
+                  {{ chatMessage.sender }}
                 </div>
-                <div
-                  class="chat-message-content"
-                  v-if="chatMessage.type === 'text'"
-                >
-                  {{ chatMessage.content }}
+                <div class="chat-message-content">
+                  {{ chatMessage.message }}
                 </div>
-                <div
-                  class="chat-message-content"
-                  v-if="chatMessage.type === 'info'"
-                >
-                  {{ chatMessage.content }}
-                </div>
-                <div
-                  class="chat-message-content"
-                  v-if="chatMessage.type === 'gif'"
-                  v-html="chatMessage.content"
-                ></div>
               </div>
             </div>
           </div>
@@ -53,7 +36,7 @@
     </div>
   </div>
   <div class="chat-input">
-    <InputText v-model="message" />
+    <InputText v-model="message" @keypress.enter="sendMessage" />
 
     <span
       class="pi pi-send"
@@ -64,34 +47,38 @@
 </template>
 
 <script setup lang="ts">
+import { chatApi } from '@/api';
 import { useSocketIO } from '@/composables/use-socket-io';
+import router from '@/router';
 import { useUserStore } from '@/stores';
-import { nanoid } from 'nanoid';
 
 export type Message = {
   roomId: string;
   sender: string;
   receiver: string;
   message: string;
+  date: string;
 };
 
 const { currentUser } = useUserStore();
-
 const message = ref('');
+const chatMessages = ref<Message[]>([]);
+const currentReceiver = ref('');
 
-// generateMessages
-const chatMessages = ref<Message[]>(
-  new Array(10).fill({
-    id: nanoid(),
-    content:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.',
-    type: 'text',
-    User: {
-      id: nanoid(),
-      username: 'John Doe',
-    },
-  })
-);
+const currentRoom = computed(() => router.currentRoute.value.params.id);
+
+onMounted(async () => {
+  await chatApi.getRooms().then((res) => {
+    const room = res.filter(({ id }) => id === currentRoom.value);
+    if (!room.length) return router.push({ name: 'board-messages' });
+
+    chatMessages.value = room.flatMap(({ messages }) => messages);
+
+    currentReceiver.value = room.map(({ userIds }) =>
+      userIds.filter((id) => id !== String(currentUser?.id))
+    )[0][0];
+  });
+});
 
 const { socket } = useSocketIO();
 
@@ -99,9 +86,9 @@ const sendMessage = async () => {
   if (message.value === '') return;
 
   const chatContent = {
-    roomId: '2fc118f8-d8b4-44ab-a17d-a5b8d5625e33',
+    roomId: currentRoom.value,
     sender: currentUser?.id,
-    receiver: '862c3eb2-4d3a-4942-b2cb-42314bed8b77',
+    receiver: currentReceiver.value,
     message: message.value,
   };
 

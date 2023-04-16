@@ -3,3 +3,4 @@ export * from './reservation';
 export * from './Travel';
 export * from './User';
 export * from './Car';
+export * from './Chat';

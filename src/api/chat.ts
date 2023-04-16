@@ -1,10 +1,11 @@
+import { IConversation } from '@/types';
 import { kyApi } from '~/config-api';
 
 const ressource = 'rooms';
 
-const getRooms = async () => {
-  const response = await kyApi.get(ressource).json();
-  return response;
+const getRooms = async (): Promise<IConversation[]> => {
+  const response = await kyApi.get(ressource);
+  return response.json();
 };
 
 const postMessage = async (receiver: string) => {

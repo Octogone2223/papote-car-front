@@ -1,6 +1,7 @@
 import { useUserStore } from './../stores/user';
 import { userApi } from '@/api';
 import { createRouter, createWebHistory } from 'vue-router';
+import { toast } from 'vue-sonner';
 
 const routes = [
   {
@@ -60,6 +61,8 @@ const routes = [
       const { token } = to.query;
       const { accessToken, refreshToken } = await userApi.register(token);
 
+      toast.success('Votre compte a bien été validé ! Connectez-vous !');
+
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
 
@@ -84,6 +87,8 @@ const routes = [
         await userApi.resetPassword({ token, newPassword: newPassword! });
 
         localStorage.removeItem('tempPassword');
+
+        toast.success('Votre mot de passe a bien été modifié !');
 
         next('/mon-profil');
       }
