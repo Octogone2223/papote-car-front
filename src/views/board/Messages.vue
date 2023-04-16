@@ -25,21 +25,12 @@
 
 <script setup lang="ts">
 import { chatApi } from '@/api';
+import { IConversation } from '@/types';
 
-interface Chat {
-  id: string;
-  messages: {
-    content: string;
-    userId: string;
-  };
-}
-
-const chats = ref<Chat[]>([]);
+const chats = ref<IConversation[]>([]);
 
 onMounted(async () => {
-  chats.value = (await chatApi.getRooms()) as Chat[];
-
-  await chatApi.postMessage('862c3eb2-4d3a-4942-b2cb-42314bed8b77');
+  chats.value = await chatApi.getRooms();
 });
 </script>
 
