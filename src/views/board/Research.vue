@@ -110,12 +110,15 @@
           <i class="pi pi-check-circle" id="checkIcon"></i>
         </div>
         <p>
-          Votre réservation a été envoyé à * Nom conducteur *. Vous recevrez un
+          Votre réservation a été envoyé au conducteur. Vous recevrez un
           e-mail dès que votre trajet sera validé.
         </p>
+        <router-link class="redirectEnd" to="/my-travels">
+          <Button> Mes trajets </Button>
+        </router-link>
       </div>
     </transition>
-    <StepIndicator v-show="currentStep !== 2" :steps="4" :currentStep="currentStep"
+    <StepIndicator v-show="currentStep !== 2 && currentStep !== 4" :steps="4" :currentStep="currentStep"
       @change-step="(step) => changeStep(step)" class="stepper" :handler="handleValidation" />
   </div>
 </template>
@@ -240,6 +243,14 @@ watchEffect(() => {
 
   >.stepper {
     margin: auto auto 0 auto;
+  }
+
+  div {
+    .redirectEnd {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 }
 

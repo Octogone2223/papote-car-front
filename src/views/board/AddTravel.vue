@@ -126,9 +126,13 @@
       <div v-else-if="currentStep === 7">
         <h1>Vous êtes prêt à partir&nbsp;!</h1>
         <p>
-          Vous pouvez consulter votre trajet dans la section "Mes trajets"
-          accessible depuis le menu.
+          Votre trajet à bien été enregistré.
+          <br>
+          Retrouvez le dans l'onglet "Mes trajets" !
         </p>
+        <router-link class="redirectEnd" to="/my-travels">
+          <Button> Mes trajets </Button>
+        </router-link>
       </div>
     </transition>
     <StepIndicator v-show="!isShowingNewTrajectStep && currentStep !== 7" :steps="7"
@@ -399,6 +403,14 @@ watchEffect(() => {
 
   >.stepper {
     margin: auto auto 0 auto;
+  }
+
+  div {
+    .redirectEnd {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 }
 
