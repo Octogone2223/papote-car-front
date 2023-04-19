@@ -9,6 +9,7 @@ export type Travel = {
 };
 
 export type StepTravel = {
+  id: string;
   dateStart: string;
   townStart: string;
   townEnd: string;

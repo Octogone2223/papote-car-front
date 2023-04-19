@@ -125,6 +125,7 @@ import { UseTransitionOnStep } from '@/composables';
 import { GetTravelInput } from '@/types/inputs/travel.input';
 import { watchEffect } from 'vue';
 import { Travel } from '@/types';
+import { postReservation } from '@/api/reservation';
 
 const { transitionPxInit, transitionPx, currentStep, changeStep } =
   UseTransitionOnStep;
@@ -211,10 +212,22 @@ const handleSearchTravel = async () => {
 
 };
 
+const handleAddReservation = async () => {
+  try {
+    const reservationData = await postReservation(selectedTravel.value?.steps[0].id);
+    console.log('Reservation data:', reservationData);
+  } catch (error) {
+    console.error('Error fetching reservation data:', error);
+  }
+};
+
 // Call handleSearchTravel when the currentStep changes to 2.
 watchEffect(() => {
   if (currentStep.value === 2) {
     handleSearchTravel();
+  }
+  else if (currentStep.value === 5) {
+    handleAddReservation();
   }
 });
 
