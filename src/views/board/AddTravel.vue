@@ -374,12 +374,14 @@ const handleAddTravel = async () => {
 
   const steps = [
     {
+      stepNumber: 1,
       dateStart: traject.value.date,
       place: traject.value.nbPassengers!,
       townStart: traject.value.startingPoint.label,
       townEnd: traject.value.steps[0]?.label || traject.value.endingPoint.label,
     },
     ...traject.value.steps.map((step, i) => ({
+      stepNumber: i + 2,
       dateStart: traject.value.date,
       place: traject.value.nbPassengers!,
       townStart: step.label,
@@ -388,6 +390,7 @@ const handleAddTravel = async () => {
         : traject.value.endingPoint?.label || '',
     })),
     {
+      stepNumber: traject.value.steps.length + 2,
       dateStart: traject.value.date,
       place: traject.value.nbPassengers!,
       townStart:

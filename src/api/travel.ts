@@ -9,8 +9,11 @@ const postTravel = async (json: PostTravelInput) => {
 };
 
 const getTravels = async (json: GetTravelInput) => {
-  const response = await kyApi.get(`${ressource}`, { json });
+  const searchParams = Object.fromEntries(
+    Object.entries(json).map(([key, value]) => [key, value])
+  );
+  const response = await kyApi.get(`${ressource}`, { searchParams });
   return response.json();
 };
 
-export { postTravel };
+export { postTravel, getTravels };

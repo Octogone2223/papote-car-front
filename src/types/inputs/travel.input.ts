@@ -7,10 +7,11 @@ export interface PostTravelInput {
 
 
 export interface GetTravelInput {
-  smoker: boolean;
   petAccepted: boolean;
-  startingPoint: string;
-  endingPoint: string;
+  smoker: boolean;
+  date: string;
+  townStart: string;
+  townEnd: string;
 }
 
 interface Step {

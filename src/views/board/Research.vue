@@ -7,18 +7,15 @@
           <div>
             <label for="start">Départ:</label>
             <div>
-              <GMapAutocomplete
-                :force-validation="forceValidation"
-                v-model="traject.startingPoint"
-              />
+              <GMapAutocomplete :force-validation="forceValidation" v-model="traject.startingPoint"
+                @item-select="traject.startingPoint = $event" />
             </div>
           </div>
           <label for="destination">Destination:</label>
           <div>
-            <GMapAutocomplete
-              :force-validation="forceValidation"
-              v-model="traject.endingPoint"
-            />
+
+            <GMapAutocomplete :force-validation="forceValidation" v-model="traject.endingPoint"
+              @item-select="traject.endingPoint = $event" />
           </div>
           <div>
             <label for="date">Date:</label>
@@ -26,23 +23,14 @@
           </div>
           <div>
             <label for="passengers">Nombre de voyageurs:</label>
-            <InputNumber
-              v-model="traject.nbPassengers"
-              type="number"
-              id="passengers"
-              name="passengers"
-            />
+            <InputNumber v-model="traject.nbPassengers" type="number" id="passengers" name="passengers" />
           </div>
         </form>
       </div>
 
       <div v-else-if="currentStep === 2">
         <div class="profil-view">
-          <Button
-            class="p-button-text"
-            @click="$router.go(-1)"
-            icon="pi pi-arrow-left"
-          />
+          <Button class="p-button-text" @click="$router.go(-1)" icon="pi pi-arrow-left" />
           <p>
             Nantes, France <i class="pi pi-arrow-right"></i> Paris, France
             <br />1 passager
@@ -61,10 +49,10 @@
             </td>
           </tr>
         </table>
-        <div>
+        <div v-for="(travel, index) in availableTravels" :key="index">
           <Card>
             <template #content>
-              <Timeline :value="events">
+              <Timeline :value="travel.events">
                 <template #opposite="slotProps">
                   {{ slotProps.item.date }}
                 </template>
@@ -91,12 +79,7 @@
         <div class="conducteur">
           <div class="avatar">
             <p>Jhon Does</p>
-            <Avatar
-              label="A"
-              size="xlarge"
-              class="avatar"
-              style="background: var(--primary-color); color: white"
-            />
+            <Avatar label="A" size="xlarge" class="avatar" style="background: var(--primary-color); color: white" />
             <i class="pi pi-angle-right"></i>
             <br /><br />
             <href>Contacter Jhon Does</href>
@@ -127,16 +110,15 @@
         </p>
       </div>
     </transition>
-    <StepIndicator
-      :steps="5"
-      @change-step="(step: number) => changeStep(step)"
-      class="stepper"
-      :handler="handleValidation"
-    />
+
+    <StepIndicator :steps="5" @change-step="(step) => changeStep(step)" class="stepper" :handler="handleValidation" />
   </div>
 </template>
 <script setup lang="ts">
+import { getTravels } from '@/api/travel';
 import { UseTransitionOnStep } from '@/composables';
+import { GetTravelInput } from '@/types/inputs/travel.input';
+import { watchEffect } from 'vue';
 
 const { transitionPxInit, transitionPx, currentStep, changeStep } =
   UseTransitionOnStep;
@@ -146,33 +128,11 @@ interface suggestion {
   center: number[];
 }
 
-const events = [
-  {
-    status: 'Nantes',
-    date: '15/10/2020 10:30',
-    icon: 'pi pi-shopping-cart',
-    color: '#9C27B0',
-    image: 'game-controller.jpg',
-  },
-  {
-    status: 'Paris',
-    date: '15/10/2020 14:00',
-    icon: 'pi pi-cog',
-    color: '#673AB7',
-  },
-  {
-    status: 'Lion',
-    date: '15/10/2020 16:15',
-    icon: 'pi pi-shopping-cart',
-    color: '#FF9800',
-  },
-  {
-    status: 'New-York',
-    date: '16/10/2020 10:00',
-    icon: 'pi pi-check',
-    color: '#607D8B',
-  },
+const events: any = [
+  // ...
 ];
+
+const availableTravels = ref([]);
 
 const today = new Date();
 const date =
@@ -180,6 +140,8 @@ const date =
 const time = today.getHours() + ':' + today.getMinutes();
 
 const dateTime = date + ' ' + time;
+
+console.log(dateTime)
 
 const traject = ref({
   startingPoint: null as suggestion | null,
@@ -209,15 +171,45 @@ const handleValidation = () => {
 };
 
 const handleSearchTravel = async () => {
-  //TODO : when the API will be ready, update this part
-  const body = {
-    smoker: false,
-    petAccepted: false,
-    startingPoint: '',
-    endingPoint: '',
-  } as any;
-  //const travel = await travelApi.getTravels(traject.value);
+
+
+  const today = new Date();
+  const dateTemp = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
+  const time = today.getHours() + ":" + today.getMinutes();
+
+  traject.value.date = dateTemp + ' ' + time;
+
+  console.log(dateTime)
+
+  const petAccepted = traject.value.petAccepted;
+  const smoker = traject.value.smoker;
+  const date = traject.value.date;
+  const townStart = traject.value.startingPoint?.label || '';
+  const townEnd = traject.value.endingPoint?.label || '';
+
+  try {
+    const travelData = await getTravels({
+      petAccepted: petAccepted,
+      smoker: smoker,
+      date: date,
+      townStart: townStart,
+      townEnd: townEnd,
+    });
+    console.log('Travel data:', travelData);
+    availableTravels.value = travelData;
+  } catch (error) {
+    console.error('Error fetching travel data:', error);
+  }
+
 };
+
+// Call handleSearchTravel when the currentStep changes to 2.
+watchEffect(() => {
+  if (currentStep.value === 2) {
+    handleSearchTravel();
+  }
+});
+
 </script>
 <style scoped lang="scss">
 .wrapper {
@@ -225,7 +217,7 @@ const handleSearchTravel = async () => {
   height: 100%;
   flex-direction: column;
 
-  > .stepper {
+  >.stepper {
     margin: auto auto 0 auto;
   }
 }
@@ -265,7 +257,7 @@ const handleSearchTravel = async () => {
   width: 100%;
 
   td {
-    > label {
+    >label {
       padding-right: 4px;
       padding-left: 5px;
     }
