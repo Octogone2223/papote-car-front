@@ -9,7 +9,16 @@
       :model="menuScreenSize"
       class="menu-desktop"
       v-if="screenWidth > 1024"
-    />
+    >
+      <template #start>
+        <img
+          alt="logo"
+          src="@/assets/images/logo.png"
+          height="40"
+          style="margin: 0 1rem"
+        />
+      </template>
+    </Menubar>
     <div class="board-content">
       <router-view></router-view>
     </div>
@@ -105,7 +114,7 @@ button:active {
   }
 
   .menu-desktop {
-    display: block;
+    display: flex;
   }
 }
 </style>
