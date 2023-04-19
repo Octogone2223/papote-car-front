@@ -111,6 +111,15 @@
       <div v-else-if="currentStep === 6">
         <h1>Vérifiez vos informations avant le départ&nbsp;!</h1>
         <div class="col">ETAPE...</div>
+        <Card class="travelCard">
+          <template #content>
+            <Timeline :value=formatedTravel.steps>
+              <template #content="slotProps">
+                {{ slotProps.item.townStart }}
+              </template>
+            </Timeline>
+          </template>
+        </Card>
       </div>
 
       <!-- ETAPE 7 -->
@@ -171,11 +180,13 @@ import { travelApi } from '@/api';
 import { UseTransitionOnStep } from '@/composables';
 import router from '@/router';
 import { useCarStore } from '@/stores';
-import { Car } from '@/types';
+import { Car, StepTravel, Travel } from '@/types';
 import { toastCustomError } from '@/utils/errors-handler';
 import { toast } from 'vue-sonner';
 import useVuelidate from '@vuelidate/core';
 import { required as requiredR, helpers } from '@vuelidate/validators';
+import { PostTravelInput } from '@/types/inputs/travel.input'
+import { Ref } from 'vue';
 
 const { transitionPxInit, transitionPx, currentStep, changeStep } =
   UseTransitionOnStep;
@@ -291,7 +302,14 @@ const handleValidation = () => {
   return true;
 };
 
-const handleAddTravel = async () => {
+let formatedTravel: Ref<PostTravelInput> = ref({
+  smoker: false,
+  petAccepted: false,
+  car: '',
+  steps: []
+});
+
+const formatTravel = async () => {
   if (
     !selectedCar.value ||
     !traject.value.startingPoint ||
@@ -300,7 +318,7 @@ const handleAddTravel = async () => {
     return;
   }
 
-  const steps = [
+  const formatedTrajectStep = [
     {
       stepNumber: 1,
       dateStart: traject.value.date,
@@ -328,15 +346,20 @@ const handleAddTravel = async () => {
     },
   ];
 
-  const body = {
-    smoker: traject.value.smoker,
-    petAccepted: traject.value.petAccepted,
-    car: String(selectedCar.value.id),
-    steps,
-  };
+  if (selectedCar.value) {
+    formatedTravel.value = {
+      smoker: traject.value.smoker,
+      petAccepted: traject.value.petAccepted,
+      car: String(selectedCar.value.id),
+      steps: formatedTrajectStep,
+    } as PostTravelInput;
+  }
+}
+
+const handleAddTravel = async () => {
 
   await travelApi
-    .postTravel(body)
+    .postTravel(formatedTravel.value)
     .catch(() =>
       toastCustomError('Une erreur est survenue lors de la création du trajet')
     );
@@ -357,6 +380,12 @@ const displayCarLabel = (car: Car) => {
   if (!car) return '';
   return `${car.model} - ${car.brand} (${car.color} - ${car.place} places)`;
 };
+
+watchEffect(() => {
+  if (currentStep.value === 6) {
+    formatTravel();
+  }
+});
 </script>
 
 <style scoped lang="scss">
