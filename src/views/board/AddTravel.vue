@@ -131,9 +131,9 @@
         </p>
       </div>
     </transition>
-
-    <StepIndicator v-show="!isShowingNewTrajectStep" :steps="7" @change-step="(step: number) => changeStep(step)"
-      @complete="() => handleAddTravel()" class="stepper" :handler="handleValidation" />
+    <StepIndicator v-show="!isShowingNewTrajectStep && currentStep !== 7" :steps="7"
+      @change-step="(step: number) => changeStep(step)" @complete="() => handleAddTravel()" class="stepper"
+      :handler="handleValidation" />
 
     <Dialog :breakpoints="{ '960px': '75vw', '640px': '90vw' }" :style="{ width: '50vw' }" header="Ajouter un véhicule"
       v-model:visible="isShowindAddCarModal" :modal="true" style="padding: 0">
@@ -384,6 +384,9 @@ const displayCarLabel = (car: Car) => {
 watchEffect(() => {
   if (currentStep.value === 6) {
     formatTravel();
+  } else if (currentStep.value === 7) {
+    formatTravel();
+    handleAddTravel();
   }
 });
 </script>
