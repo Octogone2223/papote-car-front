@@ -17,7 +17,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { getTravels, getTravelsUser } from '@/api/travel';
+import { getTravels, getTravelsUser, getTravelsDetails } from '@/api/travel';
 import { UseTransitionOnStep } from '@/composables';
 import { GetTravelInput } from '@/types/inputs/travel.input';
 import { watchEffect } from 'vue';
@@ -63,9 +63,15 @@ const selectTravel = (travel: Travel) => {
 
 const handleGetTravel = async () => {
   try {
-    const travelData = await getTravelsUser();
-    console.log('Travel data:', travelData);
-    availableTravels.value = travelData;
+    const travelsData = await getTravelsUser();
+    let travelsDataDetails: any[] = [];
+    for (let travelData of travelsData) {
+      await getTravelsDetails(travelData.id).then(res => {
+        travelsDataDetails.push(res);
+      });
+    }
+    console.log('Travel data:', travelsData);
+    availableTravels.value = travelsDataDetails;
   } catch (error) {
     console.error('Error fetching travel data:', error);
   }

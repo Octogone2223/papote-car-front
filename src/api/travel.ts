@@ -21,4 +21,9 @@ const getTravelsUser = async () => {
   return response.json();
 };
 
-export { postTravel, getTravels,getTravelsUser };
+const getTravelsDetails = async (travelId:string) => {
+  const response = await kyApi.get(`${ressource}/${travelId}`);
+  return response.json();
+};
+
+export { postTravel, getTravels,getTravelsUser, getTravelsDetails};
