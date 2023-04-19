@@ -22,7 +22,7 @@ import { UseTransitionOnStep } from '@/composables';
 import { GetTravelInput } from '@/types/inputs/travel.input';
 import { watchEffect } from 'vue';
 import { Travel } from '@/types';
-import { postReservation } from '@/api/reservation';
+import { getReservations, postReservation } from '@/api/reservation';
 
 const { transitionPxInit, transitionPx, currentStep, changeStep } =
   UseTransitionOnStep;
@@ -61,22 +61,31 @@ const selectTravel = (travel: Travel) => {
 };
 
 
-const handleGetTravel = async () => {
+const getTravelAndReservations = async () => {
   try {
     const travelsData = await getTravelsUser();
-    let travelsDataDetails: any[] = [];
-    for (let travelData of travelsData) {
+    const travelsDataDetails: any[] = [];
+    for (const travelData of travelsData) {
       await getTravelsDetails(travelData.id).then(res => {
         travelsDataDetails.push(res);
       });
     }
+
+    const reservationsDataDetails: any[] = [];
+    const reservationsData = await getReservations();
+    //TODO
+    // for (const reservationData of reservationsData) {
+    //   await getReservationsDetails(reservationData.id).then(res => {
+    //     reservationsDataDetails.push(res);
+    //   });
+    // }
+    availableTravels.value = [...travelsDataDetails/*, ...reservationsData*/];
     console.log('Travel data:', travelsData);
-    availableTravels.value = travelsDataDetails;
   } catch (error) {
     console.error('Error fetching travel data:', error);
   }
 };
-handleGetTravel();
+getTravelAndReservations();
 
 const handleAddReservation = async () => {
   try {
