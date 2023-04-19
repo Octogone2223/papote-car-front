@@ -30,7 +30,8 @@
 
       <div v-else-if="currentStep === 2">
         <div class="profil-view">
-          <Button class="p-button-text" @click="$router.go(-1)" icon="pi pi-arrow-left" />
+          <Button class="p-button-text" @click="currentStep = currentStep - 1; changeStep(currentStep)"
+            icon="pi pi-arrow-left" />
           <p>
             Nantes, France <i class="pi pi-arrow-right"></i> Paris, France
             <br />1 passager
@@ -65,7 +66,7 @@
         </div>
       </div>
 
-      <div v-else-if="currentStep === 3">
+      <!-- <div v-else-if="currentStep === 3">
         <h2>00/00/0000 00:00</h2>
         <br />
         <template v-if="selectedTravel">
@@ -87,9 +88,9 @@
             <href>Contacter Jhon Does</href>
           </div>
         </div>
-      </div>
+      </div> -->
 
-      <div v-else-if="currentStep === 4">
+      <div v-else-if="currentStep === 3">
         <h2>Vérifiez les informations de réservations</h2>
         <br />
         <template v-if="selectedTravel">
@@ -103,7 +104,7 @@
           </Timeline>
         </template>
       </div>
-      <div v-else-if="currentStep === 5">
+      <div v-else-if="currentStep === 4">
         <h2>Réservation envoyée</h2>
         <div style="padding: 35px; text-align: center">
           <i class="pi pi-check-circle" id="checkIcon"></i>
@@ -114,9 +115,8 @@
         </p>
       </div>
     </transition>
-    <div v-show="currentStep !== 2">
-      <StepIndicator :steps="5" @change-step="(step) => changeStep(step)" class="stepper" :handler="handleValidation" />
-    </div>
+    <StepIndicator v-show="currentStep !== 2" :steps="4" :currentStep="currentStep"
+      @change-step="(step) => changeStep(step)" class="stepper" :handler="handleValidation" />
   </div>
 </template>
 <script setup lang="ts">
@@ -226,7 +226,7 @@ watchEffect(() => {
   if (currentStep.value === 2) {
     handleSearchTravel();
   }
-  else if (currentStep.value === 5) {
+  else if (currentStep.value === 4) {
     handleAddReservation();
   }
 });
