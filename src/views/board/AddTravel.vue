@@ -96,6 +96,13 @@
                 <span>{{ displayCarLabel(slotProps.option) }}</span>
               </div>
             </template>
+            <template #empty>
+              <div>
+                Aucun véhicule, en ajouter un ?
+                <Button label="Ajouter un véhicule" class="p-button-text p-button-sm"
+                  style="padding: 0; margin: 0; border: none" @click="isShowindAddCarModal = true" />
+              </div>
+            </template>
           </Dropdown>
         </div>
       </div>

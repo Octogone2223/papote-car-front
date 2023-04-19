@@ -50,7 +50,7 @@
           </tr>
         </table>
         <div v-if="availableTravels && availableTravels.length" v-for="(travel, index) in availableTravels" :key="index">
-          <Card class="travelCard" @click="changeStep(currentStep + 1)">
+          <Card class="travelCard" @click="selectTravel(travel)">
             <template #content>
               <Timeline :value=travel.steps>
                 <template #opposite="slotProps">
@@ -68,14 +68,16 @@
       <div v-else-if="currentStep === 3">
         <h2>00/00/0000 00:00</h2>
         <br />
-        <Timeline :value="events">
-          <template #opposite="slotProps">
-            {{ slotProps.item.date }}
-          </template>
-          <template #content="slotProps">
-            {{ slotProps.item.status }}
-          </template>
-        </Timeline>
+        <template v-if="selectedTravel">
+          <Timeline :value="selectedTravel.steps">
+            <template #opposite="slotProps">
+              {{ slotProps.item.dateStart }}
+            </template>
+            <template #content="slotProps">
+              {{ slotProps.item.townStart }}
+            </template>
+          </Timeline>
+        </template>
         <div class="conducteur">
           <div class="avatar">
             <p>Jhon Does</p>
@@ -90,14 +92,16 @@
       <div v-else-if="currentStep === 4">
         <h2>Vérifiez les informations de réservations</h2>
         <br />
-        <Timeline :value="events">
-          <template #opposite="slotProps">
-            {{ slotProps.item.date }}
-          </template>
-          <template #content="slotProps">
-            {{ slotProps.item.status }}
-          </template>
-        </Timeline>
+        <template v-if="selectedTravel">
+          <Timeline :value="selectedTravel.steps">
+            <template #opposite="slotProps">
+              {{ slotProps.item.dateStart }}
+            </template>
+            <template #content="slotProps">
+              {{ slotProps.item.townStart }}
+            </template>
+          </Timeline>
+        </template>
       </div>
       <div v-else-if="currentStep === 5">
         <h2>Réservation envoyée</h2>
@@ -110,7 +114,7 @@
         </p>
       </div>
     </transition>
-    <div v-if="currentStep !== 2">
+    <div v-show="currentStep !== 2">
       <StepIndicator :steps="5" @change-step="(step) => changeStep(step)" class="stepper" :handler="handleValidation" />
     </div>
   </div>
@@ -135,6 +139,7 @@ const events: any = [
 ];
 
 const availableTravels = ref<Travel[]>([])
+const selectedTravel = ref<Travel>();
 
 const today = new Date();
 const date =
@@ -142,8 +147,6 @@ const date =
 const time = today.getHours() + ':' + today.getMinutes();
 
 const dateTime = date + ' ' + time;
-
-console.log(dateTime)
 
 const traject = ref({
   startingPoint: null as suggestion | null,
@@ -155,6 +158,11 @@ const traject = ref({
 });
 
 const forceValidation = ref(false);
+
+const selectTravel = (travel: Travel) => {
+  selectedTravel.value = travel;
+  changeStep(3);
+};
 
 const handleValidation = () => {
   if (
@@ -180,8 +188,6 @@ const handleSearchTravel = async () => {
   const time = today.getHours() + ":" + today.getMinutes();
 
   traject.value.date = dateTemp + ' ' + time;
-
-  console.log(dateTime)
 
   const petAccepted = traject.value.petAccepted;
   const smoker = traject.value.smoker;
