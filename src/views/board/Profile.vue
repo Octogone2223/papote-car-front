@@ -8,6 +8,7 @@
           class="avatar"
           style="background: var(--primary-color); color: white"
         />
+        {{ currentUser.id }}
         <p>{{ currentUser.firstName }} {{ currentUser.lastName }}</p>
       </div>
     </div>

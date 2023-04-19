@@ -18,12 +18,16 @@
               class="chat-message"
               :class="{
                 'chat-message--right':
-                  chatMessage.sender === String(currentUser!.id),
+                  chatMessage.sender.id === String(currentUser!.id),
               }"
             >
               <div>
                 <div class="chat-message-username">
-                  {{ chatMessage.sender }}
+                  {{
+                    chatMessage.sender.firstName +
+                    ' ' +
+                    chatMessage.sender.lastName
+                  }}
                 </div>
                 <div class="chat-message-content">
                   {{ chatMessage.message }}
@@ -51,18 +55,11 @@ import { chatApi } from '@/api';
 import { useSocketIO } from '@/composables/use-socket-io';
 import router from '@/router';
 import { useUserStore } from '@/stores';
-
-export type Message = {
-  roomId: string;
-  sender: string;
-  receiver: string;
-  message: string;
-  date: string;
-};
+import { IConversation } from '@/types';
 
 const { currentUser } = useUserStore();
 const message = ref('');
-const chatMessages = ref<Message[]>([]);
+const chatMessages = ref<IConversation['messages']>([]);
 const currentReceiver = ref('');
 
 const currentRoom = computed(() => router.currentRoute.value.params.id);

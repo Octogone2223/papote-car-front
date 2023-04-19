@@ -4,8 +4,12 @@
 
     <div v-if="chats && chats.length">
       <MessagePreview
-        author="Lilian"
-        content="chat.content"
+        :author="
+          chat.messages[0].sender.firstName +
+          ' ' +
+          chat.messages[0].sender.lastName
+        "
+        :content="chat.messages[0].message"
         v-for="chat in chats"
         :onclick="
           () =>
@@ -31,6 +35,8 @@ const chats = ref<IConversation[]>([]);
 
 onMounted(async () => {
   chats.value = await chatApi.getRooms();
+
+  chatApi.postMessage('fbaee114-62d0-4a19-8a50-f4a68d4c4080');
 });
 </script>
 
