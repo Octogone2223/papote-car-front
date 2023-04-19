@@ -49,15 +49,15 @@
             </td>
           </tr>
         </table>
-        <div v-for="(travel, index) in availableTravels" :key="index">
-          <Card>
+        <div v-if="availableTravels && availableTravels.length" v-for="(travel, index) in availableTravels" :key="index">
+          <Card class="travelCard" @click="changeStep(currentStep + 1)">
             <template #content>
-              <Timeline :value="travel.events">
+              <Timeline :value=travel.steps>
                 <template #opposite="slotProps">
-                  {{ slotProps.item.date }}
+                  {{ slotProps.item.dateStart }}
                 </template>
                 <template #content="slotProps">
-                  {{ slotProps.item.status }}
+                  {{ slotProps.item.townStart }}
                 </template>
               </Timeline>
             </template>
@@ -110,8 +110,9 @@
         </p>
       </div>
     </transition>
-
-    <StepIndicator :steps="5" @change-step="(step) => changeStep(step)" class="stepper" :handler="handleValidation" />
+    <div v-if="currentStep !== 2">
+      <StepIndicator :steps="5" @change-step="(step) => changeStep(step)" class="stepper" :handler="handleValidation" />
+    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -119,6 +120,7 @@ import { getTravels } from '@/api/travel';
 import { UseTransitionOnStep } from '@/composables';
 import { GetTravelInput } from '@/types/inputs/travel.input';
 import { watchEffect } from 'vue';
+import { Travel } from '@/types';
 
 const { transitionPxInit, transitionPx, currentStep, changeStep } =
   UseTransitionOnStep;
@@ -132,7 +134,7 @@ const events: any = [
   // ...
 ];
 
-const availableTravels = ref([]);
+const availableTravels = ref<Travel[]>([])
 
 const today = new Date();
 const date =
@@ -262,5 +264,9 @@ watchEffect(() => {
       padding-left: 5px;
     }
   }
+}
+
+.travelCard {
+  margin-bottom: 10px;
 }
 </style>
