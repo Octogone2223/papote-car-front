@@ -15,6 +15,7 @@
         >
           <div>
             <div
+              v-if="chatMessage.message"
               class="chat-message"
               :class="{
                 'chat-message--right':

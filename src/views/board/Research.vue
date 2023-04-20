@@ -7,15 +7,20 @@
           <div>
             <label for="start">Départ:</label>
             <div>
-              <GMapAutocomplete :force-validation="forceValidation" v-model="traject.startingPoint"
-                @item-select="traject.startingPoint = $event" />
+              <GMapAutocomplete
+                :force-validation="forceValidation"
+                v-model="traject.startingPoint"
+                @item-select="traject.startingPoint = $event"
+              />
             </div>
           </div>
           <label for="destination">Destination:</label>
           <div>
-
-            <GMapAutocomplete :force-validation="forceValidation" v-model="traject.endingPoint"
-              @item-select="traject.endingPoint = $event" />
+            <GMapAutocomplete
+              :force-validation="forceValidation"
+              v-model="traject.endingPoint"
+              @item-select="traject.endingPoint = $event"
+            />
           </div>
           <div>
             <label for="date">Date:</label>
@@ -23,15 +28,26 @@
           </div>
           <div>
             <label for="passengers">Nombre de voyageurs:</label>
-            <InputNumber v-model="traject.nbPassengers" type="number" id="passengers" name="passengers" />
+            <InputNumber
+              v-model="traject.nbPassengers"
+              type="number"
+              id="passengers"
+              name="passengers"
+            />
           </div>
         </form>
       </div>
 
       <div v-else-if="currentStep === 2">
         <div class="profil-view">
-          <Button class="p-button-text" @click="currentStep = currentStep - 1; changeStep(currentStep)"
-            icon="pi pi-arrow-left" />
+          <Button
+            class="p-button-text"
+            @click="
+              currentStep = currentStep - 1;
+              changeStep(currentStep);
+            "
+            icon="pi pi-arrow-left"
+          />
           <p>
             Nantes, France <i class="pi pi-arrow-right"></i> Paris, France
             <br />1 passager
@@ -50,10 +66,14 @@
             </td>
           </tr>
         </table>
-        <div v-if="availableTravels && availableTravels.length" v-for="(travel, index) in availableTravels" :key="index">
+        <div
+          v-if="availableTravels && availableTravels.length"
+          v-for="(travel, index) in availableTravels"
+          :key="index"
+        >
           <Card class="travelCard" @click="selectTravel(travel)">
             <template #content>
-              <Timeline :value=travel.steps>
+              <Timeline :value="travel.steps">
                 <template #opposite="slotProps">
                   {{ slotProps.item.dateStart }}
                 </template>
@@ -85,16 +105,22 @@
           <i class="pi pi-check-circle" id="checkIcon"></i>
         </div>
         <p>
-          Votre réservation a été envoyé au conducteur. Vous recevrez un
-          e-mail dès que votre trajet sera validé.
+          Votre réservation a été envoyé au conducteur. Vous recevrez un e-mail
+          dès que votre trajet sera validé.
         </p>
         <router-link class="redirectEnd" to="/my-travels">
           <Button> Mes trajets </Button>
         </router-link>
       </div>
     </transition>
-    <StepIndicator v-show="currentStep !== 2 && currentStep !== 4" :steps="4" :currentStep="currentStep"
-      @change-step="(step) => changeStep(step)" class="stepper" :handler="handleValidation" />
+    <StepIndicator
+      v-show="currentStep !== 2 && currentStep !== 4"
+      :steps="4"
+      :currentStep="currentStep"
+      @change-step="(step) => changeStep(step)"
+      class="stepper"
+      :handler="handleValidation"
+    />
   </div>
 </template>
 <script setup lang="ts">
@@ -105,8 +131,11 @@ import { watchEffect } from 'vue';
 import { Travel } from '@/types';
 import { postReservation } from '@/api/reservation';
 import { PostTravelOutput } from '@/types/outputs/travel.output';
+import { chatApi } from '@/api';
+import { useSocketIO } from '@/composables/use-socket-io';
 
-const { transitionPxInit, transitionPx, currentStep, changeStep } = UseTransitionOnStep;
+const { transitionPxInit, transitionPx, currentStep, changeStep } =
+  UseTransitionOnStep;
 changeStep(1);
 
 interface suggestion {
@@ -114,7 +143,7 @@ interface suggestion {
   center: number[];
 }
 
-const availableTravels = ref<Travel[]>([])
+const availableTravels = ref<Travel[]>([]);
 const selectedTravel = ref<Travel>();
 
 const today = new Date();
@@ -156,12 +185,13 @@ const handleValidation = () => {
   return true;
 };
 
+const userSearched = ref('');
+
 const handleSearchTravel = async () => {
-
-
   const today = new Date();
-  const dateTemp = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
-  const time = today.getHours() + ":" + today.getMinutes();
+  const dateTemp =
+    today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
+  const time = today.getHours() + ':' + today.getMinutes();
 
   traject.value.date = dateTemp + ' ' + time;
 
@@ -188,15 +218,14 @@ const handleSearchTravel = async () => {
         travelData.steps[1].id = finalStep.id;
       }
       console.log('Travel data:', travelData);
-      travelDataFormated.push(travelData)
+      travelDataFormated.push(travelData);
+      userSearched.value = travelData.steps[0].driver.id;
     }
 
     availableTravels.value = travelDataFormated;
-
   } catch (error) {
     console.error('Error fetching travel data:', error);
   }
-
 };
 
 const handleAddReservation = async () => {
@@ -207,15 +236,20 @@ const handleAddReservation = async () => {
       for (const tempsStep of selectedTravel.value.steps) {
         if (traject.value.startingPoint?.label === tempsStep.townStart) {
           idStartStep = tempsStep.id;
-        }
-        else if (traject.value.endingPoint?.label === tempsStep.townStart) {
+        } else if (traject.value.endingPoint?.label === tempsStep.townStart) {
           idEndStep = tempsStep.id;
         }
         console.log(traject.value.endingPoint?.label);
         console.log(tempsStep);
       }
 
-      const reservationData = await postReservation({ stepId1: idStartStep, stepId2: idEndStep }, selectedTravel.value.id);
+      const reservationData = await postReservation(
+        { stepId1: idStartStep, stepId2: idEndStep },
+        selectedTravel.value.id
+      );
+
+      await chatApi.postMessage(userSearched.value);
+
       console.log('Reservation data:', reservationData);
     }
   } catch (error) {
@@ -226,12 +260,10 @@ const handleAddReservation = async () => {
 watchEffect(() => {
   if (currentStep.value === 2) {
     handleSearchTravel();
-  }
-  else if (currentStep.value === 4) {
+  } else if (currentStep.value === 4) {
     handleAddReservation();
   }
 });
-
 </script>
 <style scoped lang="scss">
 .wrapper {
@@ -239,7 +271,7 @@ watchEffect(() => {
   height: 100%;
   flex-direction: column;
 
-  >.stepper {
+  > .stepper {
     margin: auto auto 0 auto;
   }
 
@@ -287,7 +319,7 @@ watchEffect(() => {
   width: 100%;
 
   td {
-    >label {
+    > label {
       padding-right: 4px;
       padding-left: 5px;
     }

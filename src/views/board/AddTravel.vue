@@ -5,8 +5,11 @@
       <div v-if="currentStep === 1">
         <h1>D'où partez vous ?</h1>
         <div>
-          <GMapAutocomplete :force-validation="forceValidation" :map-visible="true"
-            @item-select="(v: suggestion) => pushToTraject('startingPoint', v)" />
+          <GMapAutocomplete
+            :force-validation="forceValidation"
+            :map-visible="true"
+            @item-select="(v: suggestion) => pushToTraject('startingPoint', v)"
+          />
         </div>
       </div>
 
@@ -14,8 +17,11 @@
       <div v-else-if="currentStep === 2">
         <h1>Où allez vous ?</h1>
         <div>
-          <GMapAutocomplete :force-validation="forceValidation" :map-visible="true"
-            @item-select="(v: suggestion) => pushToTraject('endingPoint', v)" />
+          <GMapAutocomplete
+            :force-validation="forceValidation"
+            :map-visible="true"
+            @item-select="(v: suggestion) => pushToTraject('endingPoint', v)"
+          />
         </div>
       </div>
 
@@ -28,20 +34,32 @@
           </h1>
 
           <div style="text-align: center; margin-top: 2rem">
-            <Button style="border-bottom: dotted" label="Ajouter une étape" class="p-button-text"
-              @click="isShowingNewTrajectStep = true" />
+            <Button
+              style="border-bottom: dotted"
+              label="Ajouter une étape"
+              class="p-button-text"
+              @click="isShowingNewTrajectStep = true"
+            />
           </div>
         </div>
         <div v-else style="height: inherit" class="col">
           <h1>Ajouter une étape</h1>
 
           <div>
-            <GMapAutocomplete :force-validation="forceValidation" @item-select="
+            <GMapAutocomplete
+              :force-validation="forceValidation"
+              @item-select="
               (v: suggestion) => pushToTraject('steps', [...traject.steps, v])
-            " :map-visible="true" />
+            "
+              :map-visible="true"
+            />
           </div>
 
-          <Button class="btn-section" label="Ajouter cette étape" @click="isShowingNewTrajectStep = false" />
+          <Button
+            class="btn-section"
+            label="Ajouter cette étape"
+            @click="isShowingNewTrajectStep = false"
+          />
         </div>
       </div>
 
@@ -69,7 +87,12 @@
         <h1>Configurer votre trajet</h1>
         <div class="col">
           <p>Date de départ</p>
-          <Calendar :showTime="true" touch-u-i v-model="traject.date" :minDate="new Date()" />
+          <Calendar
+            :showTime="true"
+            touch-u-i
+            v-model="traject.date"
+            :minDate="new Date()"
+          />
         </div>
         <div class="col">
           <p>Nombre de passagers</p>
@@ -85,7 +108,11 @@
         </div>
         <div class="col">
           <p>Sélectionner votre voiture</p>
-          <Dropdown v-model="selectedCar" :options="cars" placeholder="Sélectionner une voiture">
+          <Dropdown
+            v-model="selectedCar"
+            :options="cars"
+            placeholder="Sélectionner une voiture"
+          >
             <template #value="slotProps">
               <div class="p-dropdown-car-value">
                 <span>{{ displayCarLabel(slotProps.value) }}</span>
@@ -99,8 +126,12 @@
             <template #empty>
               <div>
                 Aucun véhicule, en ajouter un ?
-                <Button label="Ajouter un véhicule" class="p-button-text p-button-sm"
-                  style="padding: 0; margin: 0; border: none" @click="isShowindAddCarModal = true" />
+                <Button
+                  label="Ajouter un véhicule"
+                  class="p-button-text p-button-sm"
+                  style="padding: 0; margin: 0; border: none"
+                  @click="isShowindAddCarModal = true"
+                />
               </div>
             </template>
           </Dropdown>
@@ -110,10 +141,9 @@
       <!-- ETAPE 6 -->
       <div v-else-if="currentStep === 6">
         <h1>Vérifiez vos informations avant le départ&nbsp;!</h1>
-        <div class="col">ETAPE...</div>
         <Card class="travelCard">
           <template #content>
-            <Timeline :value=formatedTravel.steps>
+            <Timeline :value="formatedTravel.steps">
               <template #content="slotProps">
                 {{ slotProps.item.townStart }}
               </template>
@@ -127,7 +157,7 @@
         <h1>Vous êtes prêt à partir&nbsp;!</h1>
         <p>
           Votre trajet à bien été enregistré.
-          <br>
+          <br />
           Retrouvez le dans l'onglet "Mes trajets" !
         </p>
         <router-link class="redirectEnd" to="/my-travels">
@@ -135,45 +165,85 @@
         </router-link>
       </div>
     </transition>
-    <StepIndicator v-show="!isShowingNewTrajectStep && currentStep !== 7" :steps="7"
-      @change-step="(step: number) => changeStep(step)" @complete="() => handleAddTravel()" class="stepper"
-      :handler="handleValidation" />
+    <StepIndicator
+      v-show="!isShowingNewTrajectStep && currentStep !== 7"
+      :steps="7"
+      @change-step="(step: number) => changeStep(step)"
+      @complete="() => handleAddTravel()"
+      class="stepper"
+      :handler="handleValidation"
+    />
 
-    <Dialog :breakpoints="{ '960px': '75vw', '640px': '90vw' }" :style="{ width: '50vw' }" header="Ajouter un véhicule"
-      v-model:visible="isShowindAddCarModal" :modal="true" style="padding: 0">
+    <Dialog
+      :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
+      :style="{ width: '50vw' }"
+      header="Ajouter un véhicule"
+      v-model:visible="isShowindAddCarModal"
+      :modal="true"
+      style="padding: 0"
+    >
       <div class="col">
         <p>Marque</p>
-        <InputText type="text" v-model="carDetails.brand" :class="{
-          'p-invalid': v$.car.brand.$error,
-        }" @keydown.enter="() => handleAddCar" />
+        <InputText
+          type="text"
+          v-model="carDetails.brand"
+          :class="{
+            'p-invalid': v$.car.brand.$error,
+          }"
+          @keydown.enter="() => handleAddCar"
+        />
         <ErrorsHandler :errors="v$.car.brand.$errors" />
       </div>
       <div class="col">
         <p>Modèle</p>
-        <InputText type="text" v-model="carDetails.model" :class="{
-          'p-invalid': v$.car.model.$error,
-        }" @keydown.enter="() => handleAddCar" />
+        <InputText
+          type="text"
+          v-model="carDetails.model"
+          :class="{
+            'p-invalid': v$.car.model.$error,
+          }"
+          @keydown.enter="() => handleAddCar"
+        />
         <ErrorsHandler :errors="v$.car.model.$errors" />
       </div>
       <div class="col">
         <p>Places</p>
-        <InputNumber v-model="carDetails.place" :class="{
-          'p-invalid': v$.car.place.$error,
-        }" @keydown.enter="() => handleAddCar" />
+        <InputNumber
+          v-model="carDetails.place"
+          :class="{
+            'p-invalid': v$.car.place.$error,
+          }"
+          @keydown.enter="() => handleAddCar"
+        />
         <ErrorsHandler :errors="v$.car.place.$errors" />
       </div>
       <div class="col">
         <p>Couleur</p>
-        <Dropdown v-model="carDetails.color" :options="carColorsOptions" :class="{
-          'p-invalid': v$.car.color.$error,
-        }" @keydown.enter="() => handleAddCar" />
+        <Dropdown
+          v-model="carDetails.color"
+          :options="carColorsOptions"
+          :class="{
+            'p-invalid': v$.car.color.$error,
+          }"
+          @keydown.enter="() => handleAddCar"
+        />
         <ErrorsHandler :errors="v$.car.color.$errors" />
       </div>
 
       <template #footer>
-        <Button label="Annuler" class="p-button-text" style="margin-top: 1rem" @click="isShowindAddCarModal = false" />
+        <Button
+          label="Annuler"
+          class="p-button-text"
+          style="margin-top: 1rem"
+          @click="isShowindAddCarModal = false"
+        />
 
-        <Button label="Ajouter" icon="pi pi-check" @click="handleAddCar" autofocus />
+        <Button
+          label="Ajouter"
+          icon="pi pi-check"
+          @click="handleAddCar"
+          autofocus
+        />
       </template>
     </Dialog>
   </div>
@@ -189,10 +259,11 @@ import { toastCustomError } from '@/utils/errors-handler';
 import { toast } from 'vue-sonner';
 import useVuelidate from '@vuelidate/core';
 import { required as requiredR, helpers } from '@vuelidate/validators';
-import { PostTravelInput } from '@/types/inputs/travel.input'
+import { PostTravelInput } from '@/types/inputs/travel.input';
 import { Ref } from 'vue';
 
-const { transitionPxInit, transitionPx, currentStep, changeStep } = UseTransitionOnStep;
+const { transitionPxInit, transitionPx, currentStep, changeStep } =
+  UseTransitionOnStep;
 changeStep(1);
 
 const isShowingNewTrajectStep = ref(false);
@@ -311,7 +382,7 @@ let formatedTravel: Ref<PostTravelInput> = ref({
   smoker: false,
   petAccepted: false,
   car: '',
-  steps: []
+  steps: [],
 });
 
 const formatTravel = async () => {
@@ -339,7 +410,7 @@ const formatTravel = async () => {
       townEnd: traject.value.steps[i + 1]?.label
         ? traject.value.steps[i + 1].label
         : traject.value.endingPoint?.label || '',
-    }))
+    })),
   ];
 
   if (selectedCar.value) {
@@ -350,10 +421,9 @@ const formatTravel = async () => {
       steps: formatedTrajectStep,
     } as PostTravelInput;
   }
-}
+};
 
 const handleAddTravel = async () => {
-
   await travelApi
     .postTravel(formatedTravel.value)
     .catch(() =>
@@ -393,7 +463,7 @@ watchEffect(() => {
   flex-direction: column;
   height: 100%;
 
-  >.stepper {
+  > .stepper {
     margin: auto auto 0 auto;
   }
 

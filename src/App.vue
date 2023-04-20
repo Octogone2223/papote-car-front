@@ -133,4 +133,8 @@ a {
 .p-autocomplete-input {
   width: 100%;
 }
+
+.p-timeline-event-opposite {
+  flex: initial !important;
+}
 </style>

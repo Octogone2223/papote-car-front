@@ -8,7 +8,6 @@
           class="avatar"
           style="background: var(--primary-color); color: white"
         />
-        {{ currentUser.id }}
         <p>{{ currentUser.firstName }} {{ currentUser.lastName }}</p>
       </div>
     </div>
@@ -197,8 +196,8 @@ const rules = {
     newPassword: {
       required: helpers.withMessage(`Un mot de passe est requis`, requiredR),
       minLength: helpers.withMessage(
-        `Le mot de passe doit faire au moins 8 caractères`,
-        minLengthR(8)
+        `Le mot de passe doit faire au moins 6 caractères`,
+        minLengthR(6)
       ),
     },
     confirmNewPassword: {

@@ -9,7 +9,7 @@
           ' ' +
           chat.messages[0].sender.lastName
         "
-        :content="chat.messages[0].message"
+        :content="chat.messages[0].message || 'Pas de message'"
         v-for="chat in chats"
         :onclick="
           () =>
@@ -29,14 +29,28 @@
 
 <script setup lang="ts">
 import { chatApi } from '@/api';
+import { useSocketIO } from '@/composables/use-socket-io';
 import { IConversation } from '@/types';
 
 const chats = ref<IConversation[]>([]);
 
+const { socket } = useSocketIO();
+
 onMounted(async () => {
   chats.value = await chatApi.getRooms();
 
-  chatApi.postMessage('fbaee114-62d0-4a19-8a50-f4a68d4c4080');
+  chats.value.forEach(async (chat) => {
+    if (chat.messages.length === 0) {
+      const chatContent = {
+        roomId: chat.id,
+        receiver: chat.userIds[0],
+        sender: chat.userIds[1],
+        message: '',
+      };
+
+      socket.emit('msgToServer', chatContent);
+    }
+  });
 });
 </script>
 

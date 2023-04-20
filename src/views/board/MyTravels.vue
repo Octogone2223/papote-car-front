@@ -4,37 +4,55 @@
       <div name="slide-fade" mode="out-in" class="transition-wrapper">
         <div v-if="currentStep === 1">
           <h1>Mes trajets</h1>
-          <div v-if="availableTravels && availableTravels.length" v-for="(travel, index) in availableTravels"
-            :key="index">
+          <div
+            v-if="availableTravels && availableTravels.length"
+            v-for="(travel, index) in availableTravels"
+            :key="index"
+          >
             <Card class="travelCard" @click="selectTravel(travel)">
               <template #header>
                 <div class="header-wrapper">
                   <div class="title-wrapper">
-                    <h2 v-if="travel.type === 'Travels'">Vous êtes chauffeur</h2>
+                    <h2 v-if="travel.type === 'Travels'">
+                      Vous êtes chauffeur
+                    </h2>
                     <h2 v-else>Vous êtes passager</h2>
                   </div>
-                  <div v-if="travel.type === 'Travels'" class="passengers-wrapper">
-                    <h2 class="passenger-count">{{ 1 }}/{{ travel.steps[0].place }}</h2>
+                  <div
+                    v-if="travel.type === 'Travels'"
+                    class="passengers-wrapper"
+                  >
+                    <h2 class="passenger-count">
+                      {{ 1 }}/{{ travel.steps[0].place }}
+                    </h2>
                     <span class="p-menuitem-icon pi pi-user"></span>
                   </div>
                   <div v-else class="passengers-wrapper">
-                    <h2 v-if="travel.validated === false" class="passenger-count">En Attente Validation</h2>
+                    <h2
+                      v-if="travel.validated === false"
+                      class="passenger-count"
+                    >
+                      En Attente Validation
+                    </h2>
                     <h2 v-else class="passenger-count">Validé</h2>
                   </div>
                 </div>
               </template>
               <template #content>
-                <Timeline v-if="travel.steps" :value=travel.steps>
+                <Timeline v-if="travel.steps" :value="travel.steps">
                   <template #opposite="slotProps">
-                    {{ slotProps.item.dateStart }}
+                    {{ formatISODate(slotProps.item.dateStart) }}
                   </template>
                   <template #content="slotProps">
                     {{ slotProps.item.townStart }}
                   </template>
                 </Timeline>
-                <Timeline v-if="travel.reservedSteps" :value=travel.reservedSteps>
+                <Timeline
+                  v-if="travel.reservedSteps"
+                  :value="travel.reservedSteps"
+                >
                   <template #opposite="slotProps">
-                    {{ slotProps.item.dateStart }}
+                    {{ formatISODate(slotProps.item.dateStart) }}
                   </template>
                   <template #content="slotProps">
                     {{ slotProps.item.townStart }}
@@ -46,8 +64,14 @@
         </div>
         <div v-if="currentStep === 2">
           <div class="profil-view">
-            <Button class="p-button-text" @click="currentStep = currentStep - 1; changeStep(currentStep)"
-              icon="pi pi-arrow-left" />
+            <Button
+              class="p-button-text"
+              @click="
+                currentStep = currentStep - 1;
+                changeStep(currentStep);
+              "
+              icon="pi pi-arrow-left"
+            />
             <p>
               Nantes, France <i class="pi pi-arrow-right"></i> Paris, France
               <br />1 passager
@@ -58,7 +82,7 @@
           <template v-if="selectedTravel">
             <Timeline :value="selectedTravel.steps">
               <template #opposite="slotProps">
-                {{ slotProps.item.dateStart }}
+                {{ formatISODate(slotProps.item.dateStart) }}
               </template>
               <template #content="slotProps">
                 {{ slotProps.item.townStart }}
@@ -68,7 +92,6 @@
         </div>
       </div>
     </transition>
-
   </div>
 </template>
 <script setup lang="ts">
@@ -77,9 +100,14 @@ import { UseTransitionOnStep } from '@/composables';
 import { GetTravelInput } from '@/types/inputs/travel.input';
 import { watchEffect } from 'vue';
 import { Travel } from '@/types';
-import { getReservations, getReservationsDetails, postReservation } from '@/api/reservation';
+import {
+  getReservations,
+  getReservationsDetails,
+  postReservation,
+} from '@/api/reservation';
 
-const { transitionPxInit, transitionPx, currentStep, changeStep } = UseTransitionOnStep;
+const { transitionPxInit, transitionPx, currentStep, changeStep } =
+  UseTransitionOnStep;
 changeStep(1);
 
 interface suggestion {
@@ -87,7 +115,7 @@ interface suggestion {
   center: number[];
 }
 
-const availableTravels = ref<any[]>([])
+const availableTravels = ref<any[]>([]);
 const selectedTravel = ref<Travel>();
 
 const today = new Date();
@@ -106,20 +134,18 @@ const traject = ref({
   petAccepted: true as boolean,
 });
 
-
 const selectTravel = (travel: Travel) => {
   selectedTravel.value = travel;
   changeStep(2);
 };
-
 
 const getTravelsAndReservations = async () => {
   try {
     const travelsData = await getTravelsUser();
     const travelsDataDetails: any[] = [];
     for (const travelData of travelsData) {
-      await getTravelsDetails(travelData.id).then(res => {
-        res.type = 'Travels'
+      await getTravelsDetails(travelData.id).then((res) => {
+        res.type = 'Travels';
         travelsDataDetails.push(res);
       });
     }
@@ -137,6 +163,16 @@ const getTravelsAndReservations = async () => {
 };
 getTravelsAndReservations();
 
+const formatISODate = (stringDate: string) => {
+  const date = new Date(stringDate);
+
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  return `${day}/${month}/${year} à ${hours}:${minutes}`;
+};
 </script>
 <style scoped lang="scss">
 .wrapper {
@@ -144,7 +180,7 @@ getTravelsAndReservations();
   height: 100%;
   flex-direction: column;
 
-  >.stepper {
+  > .stepper {
     margin: auto auto 0 auto;
   }
 
@@ -229,7 +265,7 @@ getTravelsAndReservations();
   width: 100%;
 
   td {
-    >label {
+    > label {
       padding-right: 4px;
       padding-left: 5px;
     }
@@ -237,6 +273,8 @@ getTravelsAndReservations();
 }
 
 .travelCard {
-  margin-bottom: 10px;
+  margin: 1rem 0;
+  padding: 1rem;
+  cursor: pointer;
 }
 </style>
