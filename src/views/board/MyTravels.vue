@@ -56,7 +56,7 @@
               @click="
                 currentStep = currentStep - 1;
               changeStep(currentStep);
-                                                                                                                                                                                                                                  "
+                                                                                                                                                                                                                                                                  "
               icon="pi pi-arrow-left" />
             <p>
               Nantes, France <i class="pi pi-arrow-right"></i> Paris, France
@@ -106,7 +106,15 @@
               </div>
             </div>
             <div class="timeline-wrapper">
-              <Timeline :value="selectedTravel.steps">
+              <Timeline :value="selectedTravel.steps" v-if="selectedTravel.type === 'Travels'">
+                <template #opposite="slotProps">
+                  {{ formatISODate(slotProps.item.dateStart) }}
+                </template>
+                <template #content="slotProps">
+                  {{ slotProps.item.townStart }}
+                </template>
+              </Timeline>
+              <Timeline :value="selectedTravel.reservedSteps" v-else>
                 <template #opposite="slotProps">
                   {{ formatISODate(slotProps.item.dateStart) }}
                 </template>
