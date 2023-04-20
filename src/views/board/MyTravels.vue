@@ -7,8 +7,20 @@
           <div v-if="availableTravels && availableTravels.length" v-for="(travel, index) in availableTravels"
             :key="index">
             <Card class="travelCard" @click="selectTravel(travel)">
+              <template #header>
+                <h2 v-if="travel.type === 'Travels'">Vous êtes chauffeur </h2>
+                <h2 v-else>Vous êtes passager </h2>
+              </template>
               <template #content>
-                <Timeline :value=travel.steps>
+                <Timeline v-if="travel.steps" :value=travel.steps>
+                  <template #opposite="slotProps">
+                    {{ slotProps.item.dateStart }}
+                  </template>
+                  <template #content="slotProps">
+                    {{ slotProps.item.townStart }}
+                  </template>
+                </Timeline>
+                <Timeline v-if="travel.reservedSteps" :value=travel.reservedSteps>
                   <template #opposite="slotProps">
                     {{ slotProps.item.dateStart }}
                   </template>
@@ -89,17 +101,21 @@ const selectTravel = (travel: Travel) => {
 };
 
 
-const getTravelAndReservations = async () => {
+const getTravelsAndReservations = async () => {
   try {
     const travelsData = await getTravelsUser();
     const travelsDataDetails: any[] = [];
     for (const travelData of travelsData) {
       await getTravelsDetails(travelData.id).then(res => {
+        res.type = 'Travels'
         travelsDataDetails.push(res);
       });
     }
 
     const reservationsData = await getReservations();
+    for (const reservationData of reservationsData) {
+      reservationData.reservedSteps = JSON.parse(reservationData.reservedSteps);
+    }
 
     availableTravels.value = [...travelsDataDetails, ...reservationsData];
     console.log('Travel data:', availableTravels);
@@ -107,16 +123,7 @@ const getTravelAndReservations = async () => {
     console.error('Error fetching travel data:', error);
   }
 };
-getTravelAndReservations();
-
-const handleAddReservation = async () => {
-  try {
-    const reservationData = await postReservation(selectedTravel.value?.steps[0].id);
-    console.log('Reservation data:', reservationData);
-  } catch (error) {
-    console.error('Error fetching reservation data:', error);
-  }
-};
+getTravelsAndReservations();
 
 </script>
 <style scoped lang="scss">
