@@ -25,18 +25,6 @@
       <div v-if="currentTab === 'details'">
         <div>
           <div class="col">
-            <p>Description</p>
-            <InputText
-              type="text"
-              v-model="details.description"
-              :class="{
-                'p-invalid': v$.user.description.$error,
-              }"
-              @keydown.enter="() => handleUpdateUser"
-            />
-            <ErrorsHandler :errors="v$.user.description.$errors" />
-          </div>
-          <div class="col">
             <p>Nom</p>
             <InputText
               type="text"
@@ -184,7 +172,6 @@ const password = ref({
 
 const rules = {
   user: {
-    description: {},
     email: {
       required: helpers.withMessage(`Un email est requis`, requiredR),
       email: helpers.withMessage(`L'email n'est pas valide`, emailR),
