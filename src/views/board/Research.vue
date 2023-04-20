@@ -65,31 +65,6 @@
           </Card>
         </div>
       </div>
-
-      <!-- <div v-else-if="currentStep === 3">
-        <h2>00/00/0000 00:00</h2>
-        <br />
-        <template v-if="selectedTravel">
-          <Timeline :value="selectedTravel.steps">
-            <template #opposite="slotProps">
-              {{ slotProps.item.dateStart }}
-            </template>
-            <template #content="slotProps">
-              {{ slotProps.item.townStart }}
-            </template>
-          </Timeline>
-        </template>
-        <div class="conducteur">
-          <div class="avatar">
-            <p>Jhon Does</p>
-            <Avatar label="A" size="xlarge" class="avatar" style="background: var(--primary-color); color: white" />
-            <i class="pi pi-angle-right"></i>
-            <br /><br />
-            <href>Contacter Jhon Does</href>
-          </div>
-        </div>
-      </div> -->
-
       <div v-else-if="currentStep === 3">
         <h2>Vérifiez les informations de réservations</h2>
         <br />
@@ -129,18 +104,15 @@ import { GetTravelInput } from '@/types/inputs/travel.input';
 import { watchEffect } from 'vue';
 import { Travel } from '@/types';
 import { postReservation } from '@/api/reservation';
+import { PostTravelOutput } from '@/types/outputs/travel.output';
 
-const { transitionPxInit, transitionPx, currentStep, changeStep } =
-  UseTransitionOnStep;
+const { transitionPxInit, transitionPx, currentStep, changeStep } = UseTransitionOnStep;
+changeStep(1);
 
 interface suggestion {
   label: string;
   center: number[];
 }
-
-const events: any = [
-  // ...
-];
 
 const availableTravels = ref<Travel[]>([])
 const selectedTravel = ref<Travel>();
@@ -200,15 +172,27 @@ const handleSearchTravel = async () => {
   const townEnd = traject.value.endingPoint?.label || '';
 
   try {
-    const travelData = await getTravels({
+    const travelsData = await getTravels({
       petAccepted: petAccepted,
       smoker: smoker,
       date: date,
       townStart: townStart,
       townEnd: townEnd,
     });
-    console.log('Travel data:', travelData);
-    availableTravels.value = travelData;
+    let travelDataFormated = [];
+    for (let travelData of travelsData) {
+      if (travelData.steps.length === 1) {
+        const finalStep = travelData.steps[0];
+        travelData.steps.push({}); // Ajoute une deuxième étape vide
+        travelData.steps[1].townStart = finalStep.townEnd; // Ville de départ de la deuxième étape = Ville d'arrivée de la première étape
+        travelData.steps[1].id = finalStep.id;
+      }
+      console.log('Travel data:', travelData);
+      travelDataFormated.push(travelData)
+    }
+
+    availableTravels.value = travelDataFormated;
+
   } catch (error) {
     console.error('Error fetching travel data:', error);
   }
@@ -217,14 +201,28 @@ const handleSearchTravel = async () => {
 
 const handleAddReservation = async () => {
   try {
-    const reservationData = await postReservation(selectedTravel.value?.steps[0].id);
-    console.log('Reservation data:', reservationData);
+    if (selectedTravel && selectedTravel.value) {
+      let idStartStep: string = '';
+      let idEndStep: string = '';
+      for (const tempsStep of selectedTravel.value.steps) {
+        if (traject.value.startingPoint?.label === tempsStep.townStart) {
+          idStartStep = tempsStep.id;
+        }
+        else if (traject.value.endingPoint?.label === tempsStep.townStart) {
+          idEndStep = tempsStep.id;
+        }
+        console.log(traject.value.endingPoint?.label);
+        console.log(tempsStep);
+      }
+
+      const reservationData = await postReservation({ stepId1: idStartStep, stepId2: idEndStep }, selectedTravel.value.id);
+      console.log('Reservation data:', reservationData);
+    }
   } catch (error) {
     console.error('Error fetching reservation data:', error);
   }
 };
 
-// Call handleSearchTravel when the currentStep changes to 2.
 watchEffect(() => {
   if (currentStep.value === 2) {
     handleSearchTravel();

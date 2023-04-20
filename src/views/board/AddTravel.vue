@@ -192,8 +192,9 @@ import { required as requiredR, helpers } from '@vuelidate/validators';
 import { PostTravelInput } from '@/types/inputs/travel.input'
 import { Ref } from 'vue';
 
-const { transitionPxInit, transitionPx, currentStep, changeStep } =
-  UseTransitionOnStep;
+const { transitionPxInit, transitionPx, currentStep, changeStep } = UseTransitionOnStep;
+changeStep(1);
+
 const isShowingNewTrajectStep = ref(false);
 
 interface suggestion {
@@ -338,16 +339,7 @@ const formatTravel = async () => {
       townEnd: traject.value.steps[i + 1]?.label
         ? traject.value.steps[i + 1].label
         : traject.value.endingPoint?.label || '',
-    })),
-    {
-      stepNumber: traject.value.steps.length + 2,
-      dateStart: traject.value.date,
-      place: traject.value.nbPassengers!,
-      townStart:
-        traject.value.steps[traject.value.steps.length - 1]?.label ||
-        traject.value.startingPoint.label,
-      townEnd: traject.value.endingPoint.label,
-    },
+    }))
   ];
 
   if (selectedCar.value) {

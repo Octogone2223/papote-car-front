@@ -1,19 +1,50 @@
 <template>
   <div class="wrapper">
-    <div v-if="availableTravels && availableTravels.length" v-for="(travel, index) in availableTravels" :key="index">
-      <Card class="travelCard" @click="selectTravel(travel)">
-        <template #content>
-          <Timeline :value=travel.steps>
-            <template #opposite="slotProps">
-              {{ slotProps.item.dateStart }}
-            </template>
-            <template #content="slotProps">
-              {{ slotProps.item.townStart }}
-            </template>
-          </Timeline>
-        </template>
-      </Card>
-    </div>
+    <transition>
+      <div name="slide-fade" mode="out-in" class="transition-wrapper">
+        <div v-if="currentStep === 1">
+          <h1>Mes trajets</h1>
+          <div v-if="availableTravels && availableTravels.length" v-for="(travel, index) in availableTravels"
+            :key="index">
+            <Card class="travelCard" @click="selectTravel(travel)">
+              <template #content>
+                <Timeline :value=travel.steps>
+                  <template #opposite="slotProps">
+                    {{ slotProps.item.dateStart }}
+                  </template>
+                  <template #content="slotProps">
+                    {{ slotProps.item.townStart }}
+                  </template>
+                </Timeline>
+              </template>
+            </Card>
+          </div>
+        </div>
+        <div v-if="currentStep === 2">
+          <div class="profil-view">
+            <Button class="p-button-text" @click="currentStep = currentStep - 1; changeStep(currentStep)"
+              icon="pi pi-arrow-left" />
+            <p>
+              Nantes, France <i class="pi pi-arrow-right"></i> Paris, France
+              <br />1 passager
+            </p>
+          </div>
+          <h2>Information du trajet</h2>
+          <br />
+          <template v-if="selectedTravel">
+            <Timeline :value="selectedTravel.steps">
+              <template #opposite="slotProps">
+                {{ slotProps.item.dateStart }}
+              </template>
+              <template #content="slotProps">
+                {{ slotProps.item.townStart }}
+              </template>
+            </Timeline>
+          </template>
+        </div>
+      </div>
+    </transition>
+
   </div>
 </template>
 <script setup lang="ts">
@@ -22,21 +53,17 @@ import { UseTransitionOnStep } from '@/composables';
 import { GetTravelInput } from '@/types/inputs/travel.input';
 import { watchEffect } from 'vue';
 import { Travel } from '@/types';
-import { getReservations, postReservation } from '@/api/reservation';
+import { getReservations, getReservationsDetails, postReservation } from '@/api/reservation';
 
-const { transitionPxInit, transitionPx, currentStep, changeStep } =
-  UseTransitionOnStep;
+const { transitionPxInit, transitionPx, currentStep, changeStep } = UseTransitionOnStep;
+changeStep(1);
 
 interface suggestion {
   label: string;
   center: number[];
 }
 
-const events: any = [
-  // ...
-];
-
-const availableTravels = ref<Travel[]>([])
+const availableTravels = ref<any[]>([])
 const selectedTravel = ref<Travel>();
 
 const today = new Date();
@@ -58,6 +85,7 @@ const traject = ref({
 
 const selectTravel = (travel: Travel) => {
   selectedTravel.value = travel;
+  changeStep(2);
 };
 
 
@@ -71,16 +99,10 @@ const getTravelAndReservations = async () => {
       });
     }
 
-    const reservationsDataDetails: any[] = [];
     const reservationsData = await getReservations();
-    //TODO
-    // for (const reservationData of reservationsData) {
-    //   await getReservationsDetails(reservationData.id).then(res => {
-    //     reservationsDataDetails.push(res);
-    //   });
-    // }
-    availableTravels.value = [...travelsDataDetails/*, ...reservationsData*/];
-    console.log('Travel data:', travelsData);
+
+    availableTravels.value = [...travelsDataDetails, ...reservationsData];
+    console.log('Travel data:', availableTravels);
   } catch (error) {
     console.error('Error fetching travel data:', error);
   }
@@ -114,6 +136,14 @@ const handleAddReservation = async () => {
       justify-content: center;
     }
   }
+}
+
+.profil-view {
+  font-size: 0.8rem;
+  position: relative;
+  background: var(--surface-100);
+  border: var(--primary-color) dashed 1px;
+  display: flex;
 }
 
 .slide-fade-enter-from {

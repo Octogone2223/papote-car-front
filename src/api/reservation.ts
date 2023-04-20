@@ -3,10 +3,10 @@ import { kyApi } from "~/config-api";
 
 const ressource = "reservations";
 
-const postReservation = async (reservationId: string | undefined) => {
-    console.log(reservationId)
-    if (reservationId !== undefined) {
-        const response = await kyApi.post(`${ressource}/steps/${reservationId}`);
+const postReservation = async (json: any, travelId: number) => {
+    if (json) {
+        console.log(json);
+        const response = await kyApi.post(`${ressource}/travel/${travelId}`, { json });
         return response.json();
     } else {
         console.log('reservationId is undefined');
@@ -18,4 +18,9 @@ const getReservations = async () => {
   return response.json();
 };
 
-export { postReservation, getReservations };
+const getReservationsDetails = async (reservationId: string) => {
+  const response = await kyApi.get(`${ressource}/steps/${reservationId}`);
+  return response.json();
+};
+
+export { postReservation, getReservations, getReservationsDetails };
