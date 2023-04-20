@@ -2,21 +2,18 @@
   <div style="height: calc(100% - 58px - 2rem)" v-if="currentUser">
     <div class="profil-view">
       <div class="avatar col center">
-        <Avatar
-          :label="getInitials"
-          size="xlarge"
-          class="avatar"
-          style="background: var(--primary-color); color: white"
-        />
+        <Avatar :label="getInitials" size="xlarge" class="avatar"
+          style="background: var(--primary-color); color: white" />
         <p>{{ currentUser.firstName }} {{ currentUser.lastName }}</p>
       </div>
     </div>
 
-    <TabMenu :model="items" class="profile">
+    <TabMenu :model="items" class="profile" role="navigation" aria-label="Profil">
       <template #item="{ item }">
-        <a class="p-menuitem-link" @click="currentTab = item.tab">{{
-          item.label
-        }}</a>
+        <a class="p-menuitem-link" @click="currentTab = item.tab" role="tab" :aria-selected="currentTab === item.tab"
+          :aria-controls="item.tab">
+          {{ item.label }}
+        </a>
       </template>
     </TabMenu>
 
@@ -24,115 +21,69 @@
       <div v-if="currentTab === 'details'">
         <div>
           <div class="col">
-            <p>Nom</p>
-            <InputText
-              type="text"
-              v-model="details.lastName"
-              :class="{
-                'p-invalid': v$.user.lastName.$error,
-              }"
-              @keydown.enter="() => handleUpdateUser"
-            />
-            <ErrorsHandler :errors="v$.user.lastName.$errors" />
+            <label for="lastName">Nom</label>
+            <InputText type="text" id="lastName" v-model="details.lastName" :class="{
+              'p-invalid': v$.user.lastName.$error,
+            }" @keydown.enter="() => handleUpdateUser" autocomplete="family-name" aria-describedby="lastNameError" />
+            <span role="alert" id="lastNameError">
+              <ErrorsHandler :errors="v$.user.lastName.$errors" />
+            </span>
           </div>
           <div class="col">
-            <p>Prénom</p>
-            <InputText
-              type="text"
-              v-model="details.firstName"
-              :class="{
-                'p-invalid': v$.user.firstName.$error,
-              }"
-              @keydown.enter="() => handleUpdateUser"
-            />
-            <ErrorsHandler :errors="v$.user.firstName.$errors" />
+            <label for="firstName">Prénom</label>
+            <InputText type="text" id="firstName" v-model="details.firstName" :class="{
+              'p-invalid': v$.user.firstName.$error,
+            }" @keydown.enter="() => handleUpdateUser" autocomplete="given-name" aria-describedby="firstNameError" />
+            <span role="alert" id="firstNameError">
+              <ErrorsHandler :errors="v$.user.firstName.$errors" />
+            </span>
           </div>
           <div class="col">
-            <p>Email</p>
-            <InputText
-              type="text"
-              v-model="details.email"
-              :class="{
-                'p-invalid': v$.user.email.$error,
-              }"
-              @keydown.enter="() => handleUpdateUser"
-            />
-            <ErrorsHandler :errors="v$.user.email.$errors" />
+            <label for="email">Email</label>
+            <InputText type="text" id="email" v-model="details.email" :class="{
+              'p-invalid': v$.user.email.$error,
+            }" @keydown.enter="() => handleUpdateUser" autocomplete="email" aria-describedby="emailError" />
+            <span role="alert" id="emailError">
+              <ErrorsHandler :errors="v$.user.email.$errors" />
+            </span>
           </div>
           <div class="col">
-            <p>Téléphone</p>
-            <InputText
-              type="text"
-              v-model="details.phone"
-              :class="{
-                'p-invalid': v$.user.phone.$error,
-              }"
-              @keydown.enter="() => handleUpdateUser"
-            />
-            <ErrorsHandler :errors="v$.user.phone.$errors" />
+            <label for="phone">Téléphone</label>
+            <InputText type="text" id="phone" v-model="details.phone" :class="{
+              'p-invalid': v$.user.phone.$error,
+            }" @keydown.enter="() => handleUpdateUser" autocomplete="tel" aria-describedby="phoneError" />
+            <span role="alert" id="phoneError">
+              <ErrorsHandler :errors="v$.user.phone.$errors" />
+            </span>
           </div>
           <div class="col">
             <p>Véhicules</p>
-            <Button
-              class="p-button-outlined"
-              label="Voir mes méhicules"
-              @click="$router.push({ name: 'board-vehicles' })"
-            />
-          </div>
-          <div class="col">
-            <Button
-              label="Appliquer"
-              style="margin: 1rem 0"
-              @click="handleUpdateUser"
-            />
-          </div>
-          <Divider
-            style="
-              background: var(--surface-300);
-              height: 1px;
-              margin-top: 0 !important;
-            "
-          />
-          <div class="col">
-            <Button
-              label="Se déconnecter"
-              class="p-button-outlined p-button-danger"
-              style="margin: 0 0 1rem 0"
-              @click="handleLogout"
-            />
+            <Button class="p-button-outlined" label="Voir mes méhicules" @click="$router.push({ name: 'board-vehicles' })"
+              tabindex="0" />
           </div>
         </div>
       </div>
 
       <div v-else-if="currentTab === 'password'" class="col">
         <div class="col">
-          <p>Nouveau mot de passe</p>
-          <InputText
-            type="password"
-            v-model="password.newPassword"
-            :class="{
-              'p-invalid': v$.password.newPassword.$error,
-            }"
-          />
-          <ErrorsHandler :errors="v$.password.newPassword.$errors" />
+          <label for="newPassword">Nouveau mot de passe</label>
+          <InputText type="password" id="newPassword" v-model="password.newPassword" :class="{
+            'p-invalid': v$.password.newPassword.$error,
+          }" autocomplete="new-password" aria-describedby="newPasswordError" />
+          <span role="alert" id="newPasswordError">
+            <ErrorsHandler :errors="v$.password.newPassword.$errors" />
+          </span>
         </div>
         <div class="col">
-          <p>Confirmation du mot de passe</p>
-          <InputText
-            type="password"
-            v-model="password.confirmNewPassword"
-            :class="{
-              'p-invalid': v$.password.confirmNewPassword.$error,
-            }"
-          />
-          <ErrorsHandler :errors="v$.password.confirmNewPassword.$errors" />
+          <label for="confirmNewPassword">Confirmation du mot de passe</label>
+          <InputText type="password" id="confirmNewPassword" v-model="password.confirmNewPassword" :class="{
+            'p-invalid': v$.password.confirmNewPassword.$error,
+          }" autocomplete="new-password" aria-describedby="confirmNewPasswordError" />
+          <span role="alert" id="confirmNewPasswordError">
+            <ErrorsHandler :errors="v$.password.confirmNewPassword.$errors" />
+          </span>
         </div>
-
-        <Button
-          label="Appliquer"
-          style="margin-top: 1rem"
-          @click="handleUpdatePassword"
-        />
+        <Button label="Appliquer" style="margin-top: 1rem" @click="handleUpdatePassword" tabindex="0" />
       </div>
     </transition>
   </div>
@@ -279,7 +230,7 @@ const getInitials = computed(() =>
   background: var(--surface-100);
   border: var(--primary-color) dashed 1px;
 
-  > .avatar {
+  >.avatar {
     position: absolute;
     top: 50%;
     left: 50%;
