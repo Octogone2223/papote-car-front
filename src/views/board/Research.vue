@@ -7,20 +7,14 @@
           <div>
             <label for="start">Départ:</label>
             <div>
-              <GMapAutocomplete
-                :force-validation="forceValidation"
-                v-model="traject.startingPoint"
-                @item-select="traject.startingPoint = $event"
-              />
+              <GMapAutocomplete :force-validation="forceValidation" v-model="traject.startingPoint"
+                @item-select="traject.startingPoint = $event" />
             </div>
           </div>
           <label for="destination">Destination:</label>
           <div>
-            <GMapAutocomplete
-              :force-validation="forceValidation"
-              v-model="traject.endingPoint"
-              @item-select="traject.endingPoint = $event"
-            />
+            <GMapAutocomplete :force-validation="forceValidation" v-model="traject.endingPoint"
+              @item-select="traject.endingPoint = $event" />
           </div>
           <div>
             <label for="date">Date:</label>
@@ -28,26 +22,19 @@
           </div>
           <div>
             <label for="passengers">Nombre de voyageurs:</label>
-            <InputNumber
-              v-model="traject.nbPassengers"
-              type="number"
-              id="passengers"
-              name="passengers"
-            />
+            <InputNumber v-model="traject.nbPassengers" type="number" id="passengers" name="passengers" />
           </div>
         </form>
       </div>
 
       <div v-else-if="currentStep === 2">
         <div class="profil-view">
-          <Button
-            class="p-button-text"
+          <Button class="p-button-text"
             @click="
               currentStep = currentStep - 1;
-              changeStep(currentStep);
-            "
-            icon="pi pi-arrow-left"
-          />
+            changeStep(currentStep);
+                                                                                                                                                                                              "
+            icon="pi pi-arrow-left" />
           <p>
             Nantes, France <i class="pi pi-arrow-right"></i> Paris, France
             <br />1 passager
@@ -66,11 +53,7 @@
             </td>
           </tr>
         </table>
-        <div
-          v-if="availableTravels && availableTravels.length"
-          v-for="(travel, index) in availableTravels"
-          :key="index"
-        >
+        <div v-if="availableTravels && availableTravels.length" v-for="(travel, index) in availableTravels" :key="index">
           <Card class="travelCard" @click="selectTravel(travel)">
             <template #content>
               <Timeline :value="travel.steps">
@@ -113,14 +96,10 @@
         </router-link>
       </div>
     </transition>
-    <StepIndicator
-      v-show="currentStep !== 2 && currentStep !== 4"
-      :steps="4"
-      :currentStep="currentStep"
-      @change-step="(step) => changeStep(step)"
-      class="stepper"
-      :handler="handleValidation"
-    />
+    <StepIndicator v-if="currentStep == 1" :steps="4" :currentStep="1" @change-step="(step) => changeStep(2)"
+      class="stepper" :handler="handleValidation" />
+    <StepIndicator v-if="currentStep == 3" :steps="4" :currentStep="3" @change-step="(step) => changeStep(4)"
+      class="stepper" :handler="handleValidation" />
   </div>
 </template>
 <script setup lang="ts">
@@ -133,6 +112,8 @@ import { postReservation } from '@/api/reservation';
 import { PostTravelOutput } from '@/types/outputs/travel.output';
 import { chatApi } from '@/api';
 import { useSocketIO } from '@/composables/use-socket-io';
+import { toastCustomError } from '@/utils/errors-handler';
+import { toast } from 'vue-sonner';
 
 const { transitionPxInit, transitionPx, currentStep, changeStep } =
   UseTransitionOnStep;
@@ -210,13 +191,35 @@ const handleSearchTravel = async () => {
       townEnd: townEnd,
     });
     let travelDataFormated = [];
+
+    const options = {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+
+    const formattedDate = date.toLocaleString("fr-FR", options);
     for (let travelData of travelsData) {
       if (travelData.steps.length === 1) {
         const finalStep = travelData.steps[0];
         travelData.steps.push({}); // Ajoute une deuxième étape vide
+        travelData.steps[1].dateStart = finalStep.dateStart;
         travelData.steps[1].townStart = finalStep.townEnd; // Ville de départ de la deuxième étape = Ville d'arrivée de la première étape
         travelData.steps[1].id = finalStep.id;
       }
+      for (const step of travelData.steps) {
+        const date = new Date(step.dateStart);
+        step.dateStart = date.toLocaleString("fr-FR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      }
+
       console.log('Travel data:', travelData);
       travelDataFormated.push(travelData);
       userSearched.value = travelData.steps[0].driver.id;
@@ -246,7 +249,11 @@ const handleAddReservation = async () => {
       const reservationData = await postReservation(
         { stepId1: idStartStep, stepId2: idEndStep },
         selectedTravel.value.id
+      ).catch(() =>
+        toastCustomError('Une erreur est survenue lors de la réservation du trajet')
       );
+
+      toast.success('Réservation envoyée');
 
       await chatApi.postMessage(userSearched.value);
 
@@ -271,7 +278,7 @@ watchEffect(() => {
   height: 100%;
   flex-direction: column;
 
-  > .stepper {
+  >.stepper {
     margin: auto auto 0 auto;
   }
 
@@ -319,7 +326,7 @@ watchEffect(() => {
   width: 100%;
 
   td {
-    > label {
+    >label {
       padding-right: 4px;
       padding-left: 5px;
     }
