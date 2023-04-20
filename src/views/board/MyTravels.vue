@@ -8,8 +8,20 @@
             :key="index">
             <Card class="travelCard" @click="selectTravel(travel)">
               <template #header>
-                <h2 v-if="travel.type === 'Travels'">Vous êtes chauffeur </h2>
-                <h2 v-else>Vous êtes passager </h2>
+                <div class="header-wrapper">
+                  <div class="title-wrapper">
+                    <h2 v-if="travel.type === 'Travels'">Vous êtes chauffeur</h2>
+                    <h2 v-else>Vous êtes passager</h2>
+                  </div>
+                  <div v-if="travel.type === 'Travels'" class="passengers-wrapper">
+                    <h2 class="passenger-count">{{ 1 }}/{{ travel.steps[0].place }}</h2>
+                    <span class="p-menuitem-icon pi pi-user"></span>
+                  </div>
+                  <div v-else class="passengers-wrapper">
+                    <h2 v-if="travel.validated === false" class="passenger-count">En Attente Validation</h2>
+                    <h2 v-else class="passenger-count">Validé</h2>
+                  </div>
+                </div>
               </template>
               <template #content>
                 <Timeline v-if="travel.steps" :value=travel.steps>
@@ -143,6 +155,35 @@ getTravelsAndReservations();
       justify-content: center;
     }
   }
+}
+
+.header-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.passengers-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.passenger-count {
+  margin-right: 8px;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  background-image: url('path/to/icon.png');
+  /* Remplacer le chemin d'accès à l'icône */
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 .profil-view {
